@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 
@@ -30,8 +29,8 @@ class PillWidget extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: small ? 8.w : 10.w,
-        vertical: small ? 3.h : 5.h,
+        horizontal: small ? 8 : 10,
+        vertical: small ? 3 : 5,
       ),
       decoration: BoxDecoration(
         color: palette.bg,
@@ -41,19 +40,19 @@ class PillWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6.r,
-            height: 6.r,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
               color: palette.dot,
               shape: BoxShape.circle,
             ),
           ),
-          SizedBox(width: 6.w),
+          SizedBox(width: 6),
           Text(
             label,
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: small ? 11.sp : 12.sp,
+              fontSize: small ? 11 : 12,
               fontWeight: FontWeight.w600,
               color: palette.fg,
               letterSpacing: 0.1,

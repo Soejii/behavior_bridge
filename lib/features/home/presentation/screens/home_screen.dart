@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -42,8 +41,8 @@ class _HomeBody extends ConsumerWidget {
         showBack: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: b.accent, size: 22.r),
-            onPressed: () => context.goNamed(RouteName.createSubject),
+            icon: Icon(Icons.add, color: b.accent, size: 22),
+            onPressed: () => context.pushNamed(RouteName.createSubject),
             tooltip: 'Add person',
           ),
         ],
@@ -56,52 +55,52 @@ class _HomeBody extends ConsumerWidget {
     final b = context.brand;
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32.w),
+        padding: EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 64.r,
-              height: 64.r,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 color: b.accentTint,
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(Icons.person_outline, size: 32.r, color: b.accent),
+              child: Icon(Icons.person_outline, size: 32, color: b.accent),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
             Text(
               'Who are we supporting today?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
-                fontSize: 18.sp,
+                fontSize: 18,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8),
             Text(
               'Add a child or student to start tracking their behavior.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: b.ink3,
                 height: 1.5,
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 24),
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: b.accent),
-              onPressed: () => context.goNamed(RouteName.createSubject),
-              icon: Icon(Icons.add, size: 18.r),
+              onPressed: () => context.pushNamed(RouteName.createSubject),
+              icon: Icon(Icons.add, size: 18),
               label: Text(
                 'Add person',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
-                  fontSize: 14.sp,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -114,40 +113,40 @@ class _HomeBody extends ConsumerWidget {
   Widget subjectList(BuildContext context) {
     final b = context.brand;
     return ListView.separated(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(16),
       itemCount: subjects.length,
-      separatorBuilder: (_, __) => SizedBox(height: 10.h),
+      separatorBuilder: (_, __) => SizedBox(height: 10),
       itemBuilder: (_, i) {
         final s = subjects[i];
         return GestureDetector(
-          onTap: () => context.goNamed(
+          onTap: () => context.pushNamed(
             RouteName.subjectDetail,
             pathParameters: {'subjectId': s.id},
           ),
           child: Container(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: b.card,
-              borderRadius: BorderRadius.circular(14.r),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: b.line),
               boxShadow: b.sh1,
             ),
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 22.r,
+                  radius: 22,
                   backgroundColor: b.accentTint,
                   child: Text(
                     s.name.substring(0, 1).toUpperCase(),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       color: b.accent,
                     ),
                   ),
                 ),
-                SizedBox(width: 14.w),
+                SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,23 +156,23 @@ class _HomeBody extends ConsumerWidget {
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
-                          fontSize: 15.sp,
+                          fontSize: 15,
                           color: b.ink,
                         ),
                       ),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 2),
                       Text(
                         '${s.ageYears} yrs · ${s.relationship}',
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 12.sp,
+                          fontSize: 12,
                           color: b.ink3,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: b.ink4, size: 20.r),
+                Icon(Icons.chevron_right, color: b.ink4, size: 20),
               ],
             ),
           ),

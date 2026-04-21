@@ -30,62 +30,83 @@ class SeedUsecase {
   static const Uuid _uuid = Uuid();
 
   Future<SeedResult> run({
-    String fixtureKey = 'onTrack',
     DateTime? today,
   }) async {
     final now = today ?? DateTime.now();
-    final fixture = fixtureByKey(fixtureKey);
 
     final subject = SubjectEntity(
       id: _uuid.v4(),
       name: 'Maya',
       ageYears: 6,
       relationship: 'Parent',
-      createdAt: now.subtract(Duration(days: fixture.length + 1)),
+      createdAt: now.subtract(const Duration(days: 30)),
     );
     (await _subjects.upsert(subject)).fold((f) => throw f, (_) => null);
 
-    final target = BehaviorTargetEntity(
-      id: _uuid.v4(),
-      subjectId: subject.id,
-      label: 'Tidying up toys after play',
-      description: 'After free-play, Maya puts toys back in the bin.',
-      baselineFrequency: 1,
-      goalFrequency: 4,
-      isIncreasing: true,
-      startDate: now.subtract(Duration(days: fixture.length)),
-      isActive: true,
-    );
-    (await _targets.upsert(target)).fold((f) => throw f, (_) => null);
+    final labels = {
+      'baseline': 'Washing hands before dinner',
+      'onTrack': 'Tidying up toys after play',
+      'scheduleUpgrade': 'Completing homework without prompts',
+      'plateau': 'Brushing teeth for 2 minutes',
+      'extinctionRisk': 'Reading 15 minutes before bed',
+      'goalReached': 'Making bed in the morning',
+    };
 
-    final schedule = ReinforcementScheduleEntity(
-      id: _uuid.v4(),
-      targetId: target.id,
-      type: ScheduleType.crf,
-      ratio: 1,
-      intervalMinutes: 0,
-      reinforcerDescription: 'Sticker on the fridge chart',
-      appliedAt: now.subtract(Duration(days: fixture.length)),
-    );
-    (await _schedules.upsert(schedule)).fold((f) => throw f, (_) => null);
+    BehaviorTargetEntity? firstTarget;
+    ReinforcementScheduleEntity? firstSchedule;
 
-    for (var i = 0; i < fixture.length; i++) {
-      final day = DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: fixture.length - 1 - i));
-      final log = DailyLogEntity(
+    for (final fixture in kFixtureSeries) {
+      final target = BehaviorTargetEntity(
+        id: _uuid.v4(),
+        subjectId: subject.id,
+        label: labels[fixture.key] ?? 'Behavior target',
+        description: 'Demo target showcasing the \${fixture.name} state.',
+        baselineFrequency: 1,
+        goalFrequency: 4,
+        isIncreasing: true,
+        startDate: now.subtract(Duration(days: fixture.length)),
+        isActive: fixture.key != 'goalReached',
+      );
+      (await _targets.upsert(target)).fold((f) => throw f, (_) => null);
+
+      firstTarget ??= target;
+
+      final schedule = ReinforcementScheduleEntity(
         id: _uuid.v4(),
         targetId: target.id,
-        date: day,
-        occurrenceCount: fixture.occurrences[i],
-        reinforcementGiven: fixture.reinforced[i],
+        type: (fixture.key == 'scheduleUpgrade' || fixture.key == 'goalReached')
+            ? ScheduleType.fr2
+            : ScheduleType.crf,
+        ratio:
+            (fixture.key == 'scheduleUpgrade' || fixture.key == 'goalReached')
+                ? 2
+                : 1,
+        intervalMinutes: 0,
+        reinforcerDescription: 'Sticker on the chart',
+        appliedAt: now.subtract(Duration(days: fixture.length)),
       );
-      (await _logs.upsert(log)).fold((f) => throw f, (_) => null);
+      (await _schedules.upsert(schedule)).fold((f) => throw f, (_) => null);
+
+      firstSchedule ??= schedule;
+
+      for (var i = 0; i < fixture.length; i++) {
+        final day = DateTime(now.year, now.month, now.day)
+            .subtract(Duration(days: fixture.length - 1 - i));
+        final log = DailyLogEntity(
+          id: _uuid.v4(),
+          targetId: target.id,
+          date: day,
+          occurrenceCount: fixture.occurrences[i],
+          reinforcementGiven: fixture.reinforced[i],
+        );
+        (await _logs.upsert(log)).fold((f) => throw f, (_) => null);
+      }
     }
 
     return SeedResult(
       subject: subject,
-      target: target,
-      schedule: schedule,
+      target: firstTarget!,
+      schedule: firstSchedule!,
     );
   }
 }

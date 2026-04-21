@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 
@@ -20,7 +19,7 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget 
   final bool showBack;
 
   @override
-  Size get preferredSize => Size.fromHeight(subtitle == null ? 56.h : 72.h);
+  Size get preferredSize => Size.fromHeight(subtitle == null ? 56 : 72);
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +34,16 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget 
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: [
               if (showBack)
                 IconButton(
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-                  icon: Icon(Icons.arrow_back, color: b.ink, size: 20.r),
-                  splashRadius: 20.r,
+                  icon: Icon(Icons.arrow_back, color: b.ink, size: 20),
+                  splashRadius: 20,
                 ),
-              SizedBox(width: 4.w),
+              SizedBox(width: 4),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,17 +54,17 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget 
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         color: b.ink,
                       ),
                     ),
                     if (subtitle != null) ...[
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 2),
                       Text(
                         subtitle!,
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 12.sp,
+                          fontSize: 12,
                           color: b.ink3,
                         ),
                       ),

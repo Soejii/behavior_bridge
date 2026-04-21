@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 
@@ -23,13 +22,13 @@ class ProgressChartWidget extends StatelessWidget {
     final b = context.brand;
     if (values.isEmpty) {
       return SizedBox(
-        height: height.h,
+        height: height,
         child: Center(
           child: Text(
             'No data yet',
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 13.sp,
+              fontSize: 13,
               color: b.ink3,
             ),
           ),
@@ -44,7 +43,7 @@ class ProgressChartWidget extends StatelessWidget {
     ];
 
     return SizedBox(
-      height: height.h,
+      height: height,
       child: LineChart(
         LineChartData(
           minX: 0,
@@ -71,7 +70,7 @@ class ProgressChartWidget extends StatelessWidget {
                   v.toInt().toString(),
                   style: TextStyle(
                     fontFamily: 'IBMPlexMono',
-                    fontSize: 9.sp,
+                    fontSize: 9,
                     color: b.ink4,
                   ),
                 ),
@@ -86,12 +85,12 @@ class ProgressChartWidget extends StatelessWidget {
                   final i = v.toInt();
                   final label = i == values.length - 1 ? 'today' : 'd${i + 1}';
                   return Padding(
-                    padding: EdgeInsets.only(top: 4.h),
+                    padding: EdgeInsets.only(top: 4),
                     child: Text(
                       label,
                       style: TextStyle(
                         fontFamily: 'IBMPlexMono',
-                        fontSize: 9.sp,
+                        fontSize: 9,
                         color: b.ink4,
                       ),
                     ),
@@ -115,7 +114,7 @@ class ProgressChartWidget extends StatelessWidget {
                   alignment: Alignment.topRight,
                   style: TextStyle(
                     fontFamily: 'IBMPlexMono',
-                    fontSize: 10.sp,
+                    fontSize: 10,
                     color: b.okDark,
                     fontWeight: FontWeight.w600,
                   ),

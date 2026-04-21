@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -53,7 +52,7 @@ class DailyLogScreen extends HookConsumerWidget {
                       reinforcementGiven: reinforced.value,
                     );
                 if (context.mounted) {
-                  context.goNamed(
+                  context.pushNamed(
                     RouteName.progress,
                     pathParameters: {'targetId': targetId},
                   );
@@ -70,13 +69,13 @@ class DailyLogScreen extends HookConsumerWidget {
                 subtitle: DateFormat('EEEE, MMM d').format(DateTime.now()),
               ),
               body: ListView(
-                padding: EdgeInsets.all(20.w),
+                padding: EdgeInsets.all(20),
                 children: [
                   Container(
-                    padding: EdgeInsets.all(20.w),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: b.card,
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: b.line),
                       boxShadow: b.sh1,
                     ),
@@ -86,81 +85,75 @@ class DailyLogScreen extends HookConsumerWidget {
                           'How many times today?',
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 14.sp,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: b.ink2,
                           ),
                         ),
-                        SizedBox(height: 20.h),
+                        SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: count.value > 0
-                                  ? () => count.value--
-                                  : null,
+                              onTap:
+                                  count.value > 0 ? () => count.value-- : null,
                               child: Container(
-                                width: 48.r,
-                                height: 48.r,
+                                width: 48,
+                                height: 48,
                                 decoration: BoxDecoration(
                                   color: b.line2,
-                                  borderRadius:
-                                      BorderRadius.circular(999),
+                                  borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Icon(Icons.remove,
-                                    color: count.value > 0
-                                        ? b.ink2
-                                        : b.ink4,
-                                    size: 20.r),
+                                    color: count.value > 0 ? b.ink2 : b.ink4,
+                                    size: 20),
                               ),
                             ),
-                            SizedBox(width: 32.w),
+                            SizedBox(width: 32),
                             Text(
                               '${count.value}',
                               style: TextStyle(
                                 fontFamily: 'IBMPlexMono',
-                                fontSize: 48.sp,
+                                fontSize: 48,
                                 fontWeight: FontWeight.w700,
                                 color: count.value >= target.goalFrequency
                                     ? b.ok
                                     : b.ink,
                               ),
                             ),
-                            SizedBox(width: 32.w),
+                            SizedBox(width: 32),
                             GestureDetector(
                               onTap: () => count.value++,
                               child: Container(
-                                width: 48.r,
-                                height: 48.r,
+                                width: 48,
+                                height: 48,
                                 decoration: BoxDecoration(
                                   color: b.accent,
-                                  borderRadius:
-                                      BorderRadius.circular(999),
+                                  borderRadius: BorderRadius.circular(999),
                                 ),
-                                child: Icon(Icons.add,
-                                    color: b.card, size: 20.r),
+                                child: Icon(Icons.add, color: b.card, size: 20),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 8),
                         Text(
                           'goal: ${target.goalFrequency} / day',
                           style: TextStyle(
                             fontFamily: 'IBMPlexMono',
-                            fontSize: 12.sp,
+                            fontSize: 12,
                             color: b.ink3,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   Container(
-                    padding: EdgeInsets.all(16.w),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: b.card,
-                      borderRadius: BorderRadius.circular(14.r),
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: b.line),
                     ),
                     child: Row(
@@ -173,17 +166,17 @@ class DailyLogScreen extends HookConsumerWidget {
                                 'Reward given today?',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
-                                  fontSize: 14.sp,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: b.ink,
                                 ),
                               ),
-                              SizedBox(height: 2.h),
+                              SizedBox(height: 2),
                               Text(
                                 'Consistency builds the habit.',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
-                                  fontSize: 12.sp,
+                                  fontSize: 12,
                                   color: b.ink3,
                                 ),
                               ),
@@ -198,13 +191,13 @@ class DailyLogScreen extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 28.h),
+                  SizedBox(height: 28),
                   FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: b.accent,
-                      minimumSize: Size.fromHeight(48.h),
+                      minimumSize: Size.fromHeight(48),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: saving.value ? null : save,
@@ -213,7 +206,7 @@ class DailyLogScreen extends HookConsumerWidget {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        fontSize: 15.sp,
+                        fontSize: 15,
                       ),
                     ),
                   ),

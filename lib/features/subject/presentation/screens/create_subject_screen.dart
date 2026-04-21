@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -43,19 +42,19 @@ class CreateSubjectScreen extends HookConsumerWidget {
       body: Form(
         key: formKey,
         child: ListView(
-          padding: EdgeInsets.all(20.w),
+          padding: EdgeInsets.all(20),
           children: [
             Text(
               'NAME',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 11.sp,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: b.ink3,
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6.h),
+            SizedBox(height: 6),
             TextFormField(
               controller: nameCtrl,
               decoration: inputDecoration(b, 'e.g. Maya'),
@@ -63,22 +62,22 @@ class CreateSubjectScreen extends HookConsumerWidget {
                   (v == null || v.trim().isEmpty) ? 'Name is required' : null,
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 15.sp,
+                fontSize: 15,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 18.h),
+            SizedBox(height: 18),
             Text(
               'AGE (YEARS)',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 11.sp,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: b.ink3,
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6.h),
+            SizedBox(height: 6),
             TextFormField(
               controller: ageCtrl,
               keyboardType: TextInputType.number,
@@ -90,32 +89,32 @@ class CreateSubjectScreen extends HookConsumerWidget {
               },
               style: TextStyle(
                 fontFamily: 'IBMPlexMono',
-                fontSize: 15.sp,
+                fontSize: 15,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 18.h),
+            SizedBox(height: 18),
             Text(
               'YOUR ROLE',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 11.sp,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: b.ink3,
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6.h),
+            SizedBox(height: 6),
             Wrap(
-              spacing: 8.w,
-              runSpacing: 8.h,
+              spacing: 8,
+              runSpacing: 8,
               children: _relationships.map((r) {
                 final selected = relationship.value == r;
                 return GestureDetector(
                   onTap: () => relationship.value = r,
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 14.w, vertical: 8.h),
+                        horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: selected ? b.accent : b.card,
                       borderRadius: BorderRadius.circular(999),
@@ -127,7 +126,7 @@ class CreateSubjectScreen extends HookConsumerWidget {
                       r,
                       style: TextStyle(
                         fontFamily: 'Inter',
-                        fontSize: 13.sp,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: selected ? b.card : b.ink2,
                       ),
@@ -136,20 +135,20 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 );
               }).toList(growable: false),
             ),
-            SizedBox(height: 32.h),
+            SizedBox(height: 32),
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: b.accent,
-                minimumSize: Size.fromHeight(48.h),
+                minimumSize: Size.fromHeight(48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: saving.value ? null : save,
               child: saving.value
                   ? SizedBox(
-                      width: 18.r,
-                      height: 18.r,
+                      width: 18,
+                      height: 18,
                       child: CircularProgressIndicator(
                         color: b.card,
                         strokeWidth: 2,
@@ -160,7 +159,7 @@ class CreateSubjectScreen extends HookConsumerWidget {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        fontSize: 15.sp,
+                        fontSize: 15,
                       ),
                     ),
             ),
@@ -177,17 +176,17 @@ class CreateSubjectScreen extends HookConsumerWidget {
         filled: true,
         fillColor: b.card,
         contentPadding:
-            EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: b.line),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: b.line),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: b.accent, width: 1.5),
         ),
       );

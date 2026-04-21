@@ -8,7 +8,6 @@ import 'package:behavior_bridge/features/analysis/presentation/screens/suggestio
 import 'package:behavior_bridge/features/behavior_target/presentation/screens/create_target_screen.dart';
 import 'package:behavior_bridge/features/daily_log/presentation/screens/daily_log_screen.dart';
 import 'package:behavior_bridge/features/home/presentation/screens/home_screen.dart';
-import 'package:behavior_bridge/features/progress/presentation/screens/dashboard_layout_screen.dart';
 import 'package:behavior_bridge/features/progress/presentation/screens/progress_screen.dart';
 import 'package:behavior_bridge/features/reinforcement_schedule/presentation/screens/schedule_setup_screen.dart';
 import 'package:behavior_bridge/features/subject/presentation/screens/create_subject_screen.dart';
@@ -43,18 +42,9 @@ GoRouter appRouter(Ref ref) => GoRouter(
               path: 'subjects/:subjectId',
               name: RouteName.subjectDetail,
               parentNavigatorKey: rootNavigatorKey,
-              builder: (_, state) {
-                final subjectId = state.pathParameters['subjectId']!;
-                final targetId = state.uri.queryParameters['targetId'];
-                return LayoutBuilder(
-                  builder: (ctx, constraints) => constraints.maxWidth >= 800
-                      ? DashboardLayoutScreen(
-                          subjectId: subjectId,
-                          targetId: targetId,
-                        )
-                      : SubjectDetailScreen(subjectId: subjectId),
-                );
-              },
+              builder: (_, state) => SubjectDetailScreen(
+                subjectId: state.pathParameters['subjectId']!,
+              ),
               routes: [
                 GoRoute(
                   path: 'targets/new',

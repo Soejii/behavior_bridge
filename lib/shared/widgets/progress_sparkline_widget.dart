@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 
@@ -19,10 +18,10 @@ class ProgressSparklineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (values.isEmpty) return SizedBox(width: width.w, height: height.h);
+    if (values.isEmpty) return SizedBox(width: width, height: height);
     return SizedBox(
-      width: width.w,
-      height: height.h,
+      width: width,
+      height: height,
       child: CustomPaint(
         painter: _SparklinePainter(
           values: values,

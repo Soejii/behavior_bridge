@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -48,22 +47,18 @@ class ProgressScreen extends ConsumerWidget {
     if (schedule != null && logs.isNotEmpty) {
       for (var i = 0; i < logs.length; i++) {
         if (!logs[i].date.isBefore(schedule.appliedAt) &&
-            (i == 0 ||
-                logs[i - 1].date.isBefore(schedule.appliedAt))) {
+            (i == 0 || logs[i - 1].date.isBefore(schedule.appliedAt))) {
           scheduleChanges.add(i);
         }
       }
     }
 
-    final avg = values.isEmpty
-        ? 0.0
-        : values.reduce((a, b) => a + b) / values.length;
-    final last7 = values.length >= 7
-        ? values.sublist(values.length - 7)
-        : values;
-    final avg7 = last7.isEmpty
-        ? 0.0
-        : last7.reduce((a, b) => a + b) / last7.length;
+    final avg =
+        values.isEmpty ? 0.0 : values.reduce((a, b) => a + b) / values.length;
+    final last7 =
+        values.length >= 7 ? values.sublist(values.length - 7) : values;
+    final avg7 =
+        last7.isEmpty ? 0.0 : last7.reduce((a, b) => a + b) / last7.length;
 
     return Scaffold(
       backgroundColor: b.bg,
@@ -72,7 +67,7 @@ class ProgressScreen extends ConsumerWidget {
         subtitle: '${logs.length} days logged',
         actions: [
           TextButton(
-            onPressed: () => context.goNamed(
+            onPressed: () => context.pushNamed(
               RouteName.suggestion,
               pathParameters: {'targetId': targetId},
             ),
@@ -81,7 +76,7 @@ class ProgressScreen extends ConsumerWidget {
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
-                fontSize: 13.sp,
+                fontSize: 13,
                 color: b.accent,
               ),
             ),
@@ -89,13 +84,13 @@ class ProgressScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(16),
         children: [
           Container(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: b.card,
-              borderRadius: BorderRadius.circular(14.r),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: b.line),
               boxShadow: b.sh1,
             ),
@@ -105,7 +100,7 @@ class ProgressScreen extends ConsumerWidget {
               scheduleChanges: scheduleChanges,
             ),
           ),
-          SizedBox(height: 14.h),
+          SizedBox(height: 14),
           Row(
             children: [
               Expanded(
@@ -116,7 +111,7 @@ class ProgressScreen extends ConsumerWidget {
                   emphasize: avg7 >= target.goalFrequency,
                 ),
               ),
-              SizedBox(width: 10.w),
+              SizedBox(width: 10),
               Expanded(
                 child: StatCardWidget(
                   label: 'All-time avg',
@@ -124,7 +119,7 @@ class ProgressScreen extends ConsumerWidget {
                   hint: '${logs.length} sessions',
                 ),
               ),
-              SizedBox(width: 10.w),
+              SizedBox(width: 10),
               Expanded(
                 child: StatCardWidget(
                   label: 'Days logged',
@@ -134,16 +129,16 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ],
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 20),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: b.accent,
-              minimumSize: Size.fromHeight(44.h),
+              minimumSize: Size.fromHeight(44),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: () => context.goNamed(
+            onPressed: () => context.pushNamed(
               RouteName.dailyLog,
               pathParameters: {'targetId': targetId},
             ),
@@ -152,7 +147,7 @@ class ProgressScreen extends ConsumerWidget {
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
-                fontSize: 15.sp,
+                fontSize: 15,
               ),
             ),
           ),

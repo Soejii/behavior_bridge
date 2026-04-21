@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -18,7 +17,8 @@ class ScheduleSetupScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
     final selected = useState(ScheduleType.crf);
-    final reinforcerCtrl = useTextEditingController(text: 'Sticker on the chart');
+    final reinforcerCtrl =
+        useTextEditingController(text: 'Sticker on the chart');
     final saving = useState(false);
 
     Future<void> save() async {
@@ -32,7 +32,7 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               reinforcerDescription: reinforcerCtrl.text.trim(),
             );
         if (context.mounted) {
-          context.goNamed(
+          context.pushNamed(
             RouteName.dailyLog,
             pathParameters: {'targetId': targetId},
           );
@@ -46,103 +46,95 @@ class ScheduleSetupScreen extends HookConsumerWidget {
       backgroundColor: b.bg,
       appBar: const CustomAppBarWidget(title: 'Reinforcement schedule'),
       body: ListView(
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.all(20),
         children: [
           Text(
             'How will you reward the behavior?',
             style: TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
-              fontSize: 16.sp,
+              fontSize: 16,
               color: b.ink,
             ),
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 6),
           Text(
             'Start with CRF — reward every single time.',
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 13.sp,
+              fontSize: 13,
               color: b.ink3,
               height: 1.5,
             ),
           ),
-          SizedBox(height: 18.h),
+          SizedBox(height: 18),
           ...ScheduleType.values.map(
             (t) => Padding(
-              padding: EdgeInsets.only(bottom: 10.h),
+              padding: EdgeInsets.only(bottom: 10),
               child: GestureDetector(
                 onTap: () => selected.value = t,
                 child: Container(
-                  padding: EdgeInsets.all(14.w),
+                  padding: EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: selected.value == t ? b.accentTint : b.card,
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          selected.value == t ? b.accent : b.line,
+                      color: selected.value == t ? b.accent : b.line,
                       width: selected.value == t ? 1.5 : 1,
                     ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 36.r,
-                        height: 36.r,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
-                          color: selected.value == t
-                              ? b.accent
-                              : b.line2,
-                          borderRadius: BorderRadius.circular(8.r),
+                          color: selected.value == t ? b.accent : b.line2,
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
                           child: Text(
                             t.shortLabel,
                             style: TextStyle(
                               fontFamily: 'IBMPlexMono',
-                              fontSize: 10.sp,
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: selected.value == t
-                                  ? b.card
-                                  : b.ink3,
+                              color: selected.value == t ? b.card : b.ink3,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           t.description,
                           style: TextStyle(
                             fontFamily: 'Inter',
-                            fontSize: 13.sp,
-                            color: selected.value == t
-                                ? b.accentFg
-                                : b.ink2,
+                            fontSize: 13,
+                            color: selected.value == t ? b.accentFg : b.ink2,
                           ),
                         ),
                       ),
                       if (selected.value == t)
-                        Icon(Icons.check_circle,
-                            color: b.accent, size: 18.r),
+                        Icon(Icons.check_circle, color: b.accent, size: 18),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8),
           Text(
             'WHAT\'S THE REWARD?',
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 11.sp,
+              fontSize: 11,
               fontWeight: FontWeight.w700,
               color: b.ink3,
               letterSpacing: 0.6,
             ),
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 6),
           TextField(
             controller: reinforcerCtrl,
             decoration: InputDecoration(
@@ -150,34 +142,34 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               hintStyle: TextStyle(fontFamily: 'Inter', color: b.ink4),
               filled: true,
               fillColor: b.card,
-              contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14.w, vertical: 12.h),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: b.line),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: b.line),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: b.accent, width: 1.5),
               ),
             ),
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 14.sp,
+              fontSize: 14,
               color: b.ink,
             ),
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 32),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: b.accent,
-              minimumSize: Size.fromHeight(48.h),
+              minimumSize: Size.fromHeight(48),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             onPressed: saving.value ? null : save,
@@ -186,7 +178,7 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
-                fontSize: 15.sp,
+                fontSize: 15,
               ),
             ),
           ),

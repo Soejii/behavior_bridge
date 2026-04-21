@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,22 +55,44 @@ class BehaviorBridgeApp extends ConsumerWidget {
       ),
     );
 
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (ctx, _) => MaterialApp.router(
-        title: 'BehaviorBridge',
-        theme: theme,
-        routerConfig: router,
-        debugShowCheckedModeBanner: false,
-        builder: (innerCtx, child) {
-          if (kDebugMode) {
-            _SeedRunner.maybeRun(innerCtx);
-          }
-          return child ?? const SizedBox.shrink();
-        },
-      ),
+    return MaterialApp.router(
+      title: 'BehaviorBridge',
+      theme: theme,
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+      builder: (innerCtx, child) {
+        _SeedRunner.maybeRun(innerCtx);
+        
+        Widget content = child ?? const SizedBox.shrink();
+
+        final mediaQueryData = MediaQuery.of(innerCtx);
+        final isWide = kIsWeb && mediaQueryData.size.width > 480;
+
+        if (isWide) {
+          return Scaffold(
+            backgroundColor: const Color(0xFFE5E9F0), // A soft gray background
+            body: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: ClipRect(child: content),
+                ),
+              ),
+            ),
+          );
+        }
+
+        return content;
+      },
     );
   }
 }

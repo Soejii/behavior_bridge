@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -28,8 +27,8 @@ class SubjectDetailScreen extends ConsumerWidget {
         title: 'Targets',
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: b.accent, size: 22.r),
-            onPressed: () => context.goNamed(
+            icon: Icon(Icons.add, color: b.accent, size: 22),
+            onPressed: () => context.pushNamed(
               RouteName.createTarget,
               pathParameters: {'subjectId': subjectId},
             ),
@@ -42,9 +41,9 @@ class SubjectDetailScreen extends ConsumerWidget {
         data: (targets) => targets.isEmpty
             ? _emptyTargets(context, subjectId)
             : ListView.separated(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(16),
                 itemCount: targets.length,
-                separatorBuilder: (_, __) => SizedBox(height: 10.h),
+                separatorBuilder: (_, __) => SizedBox(height: 10),
                 itemBuilder: (_, i) => _TargetCard(target: targets[i]),
               ),
       ),
@@ -55,44 +54,44 @@ class SubjectDetailScreen extends ConsumerWidget {
     final b = context.brand;
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.w),
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.track_changes, size: 48.r, color: b.accent),
-            SizedBox(height: 12.h),
+            Icon(Icons.track_changes, size: 48, color: b.accent),
+            SizedBox(height: 12),
             Text(
               'No targets yet',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
-                fontSize: 17.sp,
+                fontSize: 17,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8),
             Text(
               'Add a behavior to track.',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: b.ink3,
               ),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 20),
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: b.accent),
-              onPressed: () => context.goNamed(
+              onPressed: () => context.pushNamed(
                 RouteName.createTarget,
                 pathParameters: {'subjectId': subjectId},
               ),
-              icon: Icon(Icons.add, size: 18.r),
+              icon: Icon(Icons.add, size: 18),
               label: Text(
                 'Add target',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
-                  fontSize: 14.sp,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -112,15 +111,15 @@ class _TargetCard extends ConsumerWidget {
     final b = context.brand;
     final logsAsync = ref.watch(logsByTargetProvider(target.id));
     return GestureDetector(
-      onTap: () => context.goNamed(
+      onTap: () => context.pushNamed(
         RouteName.progress,
         pathParameters: {'targetId': target.id},
       ),
       child: Container(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: b.card,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: b.line),
           boxShadow: b.sh1,
         ),
@@ -135,27 +134,24 @@ class _TargetCard extends ConsumerWidget {
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       color: b.ink,
                     ),
                   ),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 4),
                   Row(
                     children: [
                       PillWidget(
-                        label:
-                            target.isActive ? 'Active' : 'Completed',
-                        tone: target.isActive
-                            ? PillTone.ok
-                            : PillTone.neutral,
+                        label: target.isActive ? 'Active' : 'Completed',
+                        tone: target.isActive ? PillTone.ok : PillTone.neutral,
                         small: true,
                       ),
-                      SizedBox(width: 8.w),
+                      SizedBox(width: 8),
                       Text(
                         'Goal: ${target.goalFrequency}',
                         style: TextStyle(
                           fontFamily: 'IBMPlexMono',
-                          fontSize: 11.sp,
+                          fontSize: 11,
                           color: b.ink3,
                         ),
                       ),
@@ -165,15 +161,15 @@ class _TargetCard extends ConsumerWidget {
               ),
             ),
             logsAsync.when(
-              loading: () => SizedBox(width: 80.w, height: 32.h),
+              loading: () => SizedBox(width: 80, height: 32),
               error: (_, __) => const SizedBox(),
               data: (logs) => ProgressSparklineWidget(
                 values: logs.map((l) => l.occurrenceCount).toList(),
                 goal: target.goalFrequency,
               ),
             ),
-            SizedBox(width: 8.w),
-            Icon(Icons.chevron_right, color: b.ink4, size: 20.r),
+            SizedBox(width: 8),
+            Icon(Icons.chevron_right, color: b.ink4, size: 20),
           ],
         ),
       ),

@@ -38,6 +38,7 @@ class BehaviorAnalysisEngine {
         headline: 'Goal reached — 21 days of steady tidy-ups 🎉',
         explanation:
             'The habit is established. Move to surprise rewards to keep it going long-term.',
+        suggestedSchedule: ScheduleType.vr3,
       );
     }
 

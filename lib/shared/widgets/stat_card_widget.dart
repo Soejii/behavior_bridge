@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 
@@ -21,10 +20,10 @@ class StatCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final b = context.brand;
     return Container(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: b.card,
-        borderRadius: BorderRadius.circular(14.r),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: b.line),
         boxShadow: b.sh1,
       ),
@@ -36,29 +35,29 @@ class StatCardWidget extends StatelessWidget {
             label.toUpperCase(),
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 10.sp,
+              fontSize: 10,
               fontWeight: FontWeight.w700,
               color: b.ink3,
               letterSpacing: 0.6,
             ),
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 6),
           Text(
             value,
             style: TextStyle(
               fontFamily: 'IBMPlexMono',
-              fontSize: emphasize ? 22.sp : 18.sp,
+              fontSize: emphasize ? 22 : 18,
               fontWeight: FontWeight.w700,
               color: emphasize ? b.accent : b.ink,
             ),
           ),
           if (hint != null) ...[
-            SizedBox(height: 4.h),
+            SizedBox(height: 4),
             Text(
               hint!,
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 11.sp,
+                fontSize: 11,
                 color: b.ink3,
               ),
             ),

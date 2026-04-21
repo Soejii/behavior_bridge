@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 import 'package:behavior_bridge/features/analysis/domain/entities/analysis_result.dart';
@@ -40,10 +39,10 @@ class SuggestionCardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: b.card,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: b.line),
           boxShadow: b.sh1,
         ),
@@ -51,46 +50,46 @@ class SuggestionCardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PillWidget(label: pillLabel, tone: tone, small: true),
-            SizedBox(height: 10.h),
+            SizedBox(height: 10),
             Text(
               result.headline,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
-                fontSize: 15.sp,
+                fontSize: 15,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 6.h),
+            SizedBox(height: 6),
             Text(
               result.explanation,
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 13.sp,
+                fontSize: 13,
                 color: b.ink2,
                 height: 1.55,
               ),
             ),
             if (result.actionableAdvice != null) ...[
-              SizedBox(height: 10.h),
+              SizedBox(height: 10),
               Container(
                 padding:
-                    EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: b.accentTint,
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.lightbulb_outline,
-                        size: 14.r, color: b.accentFg),
-                    SizedBox(width: 6.w),
+                        size: 14, color: b.accentFg),
+                    SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         result.actionableAdvice!,
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 12.sp,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: b.accentFg,
                         ),
