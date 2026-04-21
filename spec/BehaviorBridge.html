@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>BehaviorBridge — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; font-family: 'Inter', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="browser-window.jsx"></script>
+<script type="text/babel" src="tokens.jsx"></script>
+<script type="text/babel" src="chart.jsx"></script>
+<script type="text/babel" src="mobile-screens.jsx"></script>
+<script type="text/babel" src="web-screens.jsx"></script>
+
+<script type="text/babel">
+// ─────────────────────────────────────────────────────────────
+// Tweaks — state / accent / density, persisted via EDITMODE block
+// ─────────────────────────────────────────────────────────────
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "stateKey": "scheduleUpgrade",
+  "accent": "indigo",
+  "density": "comfortable"
+}/*EDITMODE-END*/;
+
+function useTweaks() {
+  const [state, setState] = React.useState(TWEAKS);
+  const [editOn, setEditOn] = React.useState(false);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === '__activate_edit_mode') setEditOn(true);
+      if (d.type === '__deactivate_edit_mode') setEditOn(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({type: '__edit_mode_available'}, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const update = (patch) => {
+    const next = {...state, ...patch};
+    setState(next);
+    window.parent.postMessage({type: '__edit_mode_set_keys', edits: patch}, '*');
+  };
+  return { tweaks: state, update, editOn };
+}
+
+function TweaksPanel({ tweaks, update, visible }) {
+  const t = getTokens(tweaks.accent, tweaks.density);
+  if (!visible) return null;
+
+  const Row = ({ label, children }) => (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#aab', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6 }}>{label}</div>
+      {children}
+    </div>
+  );
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: 16, right: 16, zIndex: 200,
+      width: 280, background: 'rgba(18,22,32,0.96)', color: '#fff',
+      borderRadius: 14, padding: 14, backdropFilter: 'blur(14px)',
+      boxShadow: '0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08)',
+      fontFamily: 'Inter, system-ui, sans-serif',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ width: 22, height: 22, borderRadius: 6, background: t.accent.stroke, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="spark" size={13} color="#fff"/>
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: -0.2 }}>Tweaks</div>
+        <div style={{ flex: 1 }}/>
+        <div style={{ fontSize: 10, color: '#7a8494' }}>persists</div>
+      </div>
+
+      <Row label="Sample state">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
+          {STATE_OPTIONS.map((o) => (
+            <button key={o.key} onClick={() => update({ stateKey: o.key })}
+              style={{
+                padding: '7px 8px', borderRadius: 7, fontSize: 11, fontWeight: 600,
+                background: tweaks.stateKey === o.key ? t.accent.stroke : 'rgba(255,255,255,0.06)',
+                color: tweaks.stateKey === o.key ? '#fff' : '#cdd3de',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+              }}>{o.name}</button>
+          ))}
+        </div>
+      </Row>
+
+      <Row label="Accent">
+        <div style={{ display: 'flex', gap: 6 }}>
+          {Object.entries(ACCENT_PRESETS).map(([key, a]) => (
+            <button key={key} onClick={() => update({ accent: key })}
+              title={a.name}
+              style={{
+                width: 38, height: 38, borderRadius: 8, background: a.stroke,
+                border: tweaks.accent === key ? '2px solid #fff' : '2px solid transparent',
+                cursor: 'pointer', padding: 0, position: 'relative',
+              }}>
+              {tweaks.accent === key && (
+                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="check" size={16} color="#fff"/>
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </Row>
+
+      <Row label="Density">
+        <div style={{ display: 'flex', gap: 5 }}>
+          {['comfortable','compact'].map((d) => (
+            <button key={d} onClick={() => update({ density: d })}
+              style={{
+                flex: 1, padding: '7px 8px', borderRadius: 7, fontSize: 11, fontWeight: 600,
+                background: tweaks.density === d ? t.accent.stroke : 'rgba(255,255,255,0.06)',
+                color: tweaks.density === d ? '#fff' : '#cdd3de',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit', textTransform: 'capitalize',
+              }}>{d}</button>
+          ))}
+        </div>
+      </Row>
+
+      <div style={{ fontSize: 10, color: '#7a8494', lineHeight: 1.4, marginTop: 4 }}>
+        State drives the suggestion, chart, pill and timeline across every screen.
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Canvas — sections of artboards for mobile + web
+// ─────────────────────────────────────────────────────────────
+function App() {
+  const { tweaks, update, editOn } = useTweaks();
+  const t = getTokens(tweaks.accent, tweaks.density);
+  const s = tweaks.stateKey;
+
+  // Mobile frames — embed an iOS bezel around the screen
+  const frame = (screen) => (
+    <div style={{ width: MOBILE_W + 24, padding: 12, background: '#0e1420', borderRadius: 48, boxShadow: '0 30px 60px rgba(14,20,32,0.18)' }}>
+      <div style={{ borderRadius: 36, overflow: 'hidden', position: 'relative' }}>
+        {screen}
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection id="intro" title="BehaviorBridge — preview" subtitle="Clinical · warm · for parents and teachers · drag to pan · scroll to zoom">
+          <DCArtboard id="readme" label="About this preview" width={760} height={MOBILE_H + 24}>
+            <div style={{ padding: 36, fontFamily: t.font, color: t.ink, height: '100%', overflow: 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: t.accent.stroke, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                  <Icon name="spark" size={20}/>
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.4 }}>BehaviorBridge</div>
+              </div>
+              <div style={{ fontSize: 14, color: t.ink2, lineHeight: 1.6, marginBottom: 18 }}>
+                A preview of the Flutter app spec — laid out for both phone and web surfaces.
+                Everything shown here is shared UI: the same components map 1:1 onto Flutter widgets.
+              </div>
+
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.ink3, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>What's here</div>
+              <ul style={{ fontSize: 13, color: t.ink2, lineHeight: 1.7, paddingLeft: 18, marginBottom: 20 }}>
+                <li><b>Mobile flow</b> — 7 screens in spec order (Home → Subject → Target → Schedule → Log → Progress → Suggestion)</li>
+                <li><b>Web dashboard</b> — the same data at a glance: sidebar, chart, recent logs, right-rail suggestion</li>
+                <li><b>State switcher</b> (Tweaks button) — flip between baseline, on-track, upgrade, plateau, extinction risk, and goal reached</li>
+              </ul>
+
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.ink3, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Current state</div>
+              <div style={{ background: t.accent.tint, border: `1px solid ${t.accent.stroke}33`, borderRadius: 12, padding: 14 }}>
+                <Pill t={t} tone={ANALYSIS[s].pillTone}>{ANALYSIS[s].pillLabel}</Pill>
+                <div style={{ fontSize: 15, fontWeight: 700, marginTop: 8 }}>{ANALYSIS[s].headline}</div>
+                <div style={{ fontSize: 13, color: t.ink2, marginTop: 6, lineHeight: 1.5 }}>{ANALYSIS[s].explanation}</div>
+              </div>
+
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.ink3, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8, marginTop: 18 }}>Handoff</div>
+              <div style={{ fontSize: 13, color: t.ink2, lineHeight: 1.6 }}>
+                Open <a href="handoff.html" style={{ color: t.accent.stroke, textDecoration: 'none', fontWeight: 600, borderBottom: `1px solid ${t.accent.stroke}55` }}>handoff.html</a> → single-page doc mapping each screen to the Flutter feature folder, data model, Riverpod provider, and analysis engine method. Paste that file into Claude Code to scaffold the app.
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="mobile" title="Mobile (Flutter)" subtitle="iPhone 15 · 390×844 · happy-path flow">
+          <DCArtboard id="home"        label="1 · Home"           width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenHome t={t}/>)}</DCArtboard>
+          <DCArtboard id="subject"     label="2 · Subject detail" width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenSubject t={t} stateKey={s}/>)}</DCArtboard>
+          <DCArtboard id="target"      label="3 · Create target"  width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenCreateTarget t={t}/>)}</DCArtboard>
+          <DCArtboard id="schedule"    label="4 · Reward schedule" width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenSchedule t={t}/>)}</DCArtboard>
+          <DCArtboard id="log"         label="5 · Daily log"      width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenLog t={t} stateKey={s}/>)}</DCArtboard>
+          <DCArtboard id="progress"    label="6 · Progress"       width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenProgress t={t} stateKey={s}/>)}</DCArtboard>
+          <DCArtboard id="suggestion"  label="7 · Suggestion"     width={MOBILE_W + 24} height={MOBILE_H + 24}>{frame(<ScreenSuggestion t={t} stateKey={s}/>)}</DCArtboard>
+        </DCSection>
+
+        <DCSection id="web" title="Web (Flutter web)" subtitle="Desktop dashboard · 1440×900 · same data, expanded view">
+          <DCArtboard id="web-dash" label="Web dashboard" width={WEB_W} height={WEB_H}>
+            <WebScreen t={t} stateKey={s}/>
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+
+      <TweaksPanel tweaks={tweaks} update={update} visible={editOn}/>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

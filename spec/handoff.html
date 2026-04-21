@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>BehaviorBridge — Claude Code handoff</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0E1420; --ink2: #32405A; --ink3: #5F6B82; --ink4: #8A94A8;
+    --line: #E5E9F0; --line2: #EEF1F6; --bg: #F6F7FB; --card: #fff;
+    --accent: #3A5FCD; --accent-tint: #EEF1FB; --accent-fg: #2B47A0;
+    --ok: #2F9E6E; --ok-tint: #E3F4EB; --warn: #C98A1E; --warn-tint: #FBF1DC;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 56px 40px 80px; }
+  header { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
+  header .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; letter-spacing: -0.5px; }
+  h1 { font-size: 34px; font-weight: 800; margin: 8px 0 4px; letter-spacing: -0.6px; }
+  .sub { color: var(--ink3); font-size: 15px; margin-bottom: 32px; }
+  .back { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
+  h2 { font-size: 20px; font-weight: 700; margin: 42px 0 14px; letter-spacing: -0.3px; }
+  h3 { font-size: 14px; font-weight: 700; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink3); }
+  p { color: var(--ink2); line-height: 1.65; font-size: 14.5px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: 0 1px 2px rgba(14,20,32,.04); }
+  .callout { background: var(--accent-tint); border: 1px solid #3A5FCD33; border-radius: 12px; padding: 16px 18px; font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .callout b { color: var(--accent-fg); }
+  code, pre { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  code { background: var(--line2); padding: 1px 6px; border-radius: 4px; color: var(--ink); }
+  pre { background: #0E1420; color: #e8eaed; padding: 18px 20px; border-radius: 12px; overflow-x: auto; line-height: 1.55; }
+  pre .c  { color: #7a8494; }
+  pre .k  { color: #9cc8ff; }
+  pre .s  { color: #c1e4b3; }
+  pre .t  { color: #ffb782; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line2); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; color: var(--ink3); letter-spacing: 0.5px; font-weight: 700; border-bottom: 1px solid var(--line); }
+  td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink); }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .pill.ok { background: var(--ok-tint); color: #1E6A49; }
+  .pill.warn { background: var(--warn-tint); color: #7A5210; }
+  .pill.accent { background: var(--accent-tint); color: var(--accent-fg); }
+  .kv { display: grid; grid-template-columns: 160px 1fr; gap: 6px 16px; font-size: 13.5px; color: var(--ink2); }
+  .kv dt { font-weight: 600; color: var(--ink3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 2px; }
+  ul { padding-left: 18px; }
+  li { margin: 5px 0; color: var(--ink2); line-height: 1.6; font-size: 14px; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 40px 0; }
+  .paste { display: flex; gap: 8px; align-items: center; padding: 10px 14px; background: var(--ink); color: #fff; border-radius: 8px; font-size: 12.5px; font-weight: 600; width: max-content; cursor: pointer; border: none; font-family: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="BehaviorBridge.html">← Back to preview</a>
+  <header>
+    <div class="logo">B</div>
+    <div>
+      <h1>BehaviorBridge — handoff</h1>
+      <div class="sub">Claude Code–ready spec. Screen → Flutter feature → model → provider.</div>
+    </div>
+  </header>
+
+  <div class="callout">
+    <b>How to use this doc with Claude Code.</b> Open this file, copy everything below the horizontal line into a Claude Code prompt, and say <i>"Scaffold this Flutter app. Follow clean architecture per feature. Implement <code>BehaviorAnalysisEngine</code> exactly per §5. Use the fake data from §10 to seed Hive on first launch so the preview states work out of the box."</i>
+  </div>
+
+  <hr/>
+
+  <h2>1 · Design system</h2>
+  <div class="kv">
+    <dt>Aesthetic</dt><dd>Clinical + trustworthy. Calm, non-childish. Evidence-based feel.</dd>
+    <dt>Type</dt><dd>Inter (UI) · IBM Plex Mono (numerics, dates, data labels)</dd>
+    <dt>Accent</dt><dd><code>#3A5FCD</code> indigo · tint <code>#EEF1FB</code> · deep pill fg <code>#2B47A0</code></dd>
+    <dt>Ink</dt><dd><code>#0E1420</code> / <code>#32405A</code> / <code>#5F6B82</code> / <code>#8A94A8</code></dd>
+    <dt>Surfaces</dt><dd>bg <code>#F6F7FB</code> · card <code>#FFFFFF</code> · line <code>#E5E9F0</code></dd>
+    <dt>Semantic</dt><dd>ok <code>#2F9E6E</code> · warn <code>#C98A1E</code> · risk <code>#C0432E</code> (each with a <i>-tint</i> pairing)</dd>
+    <dt>Radii</dt><dd>sm 6 · md 10 · lg 14 · xl 20 · pill 999</dd>
+    <dt>Density</dt><dd>two modes — <code>comfortable</code> (default) and <code>compact</code> (0.85× padding)</dd>
+  </div>
+
+  <h2>2 · Screen → feature mapping</h2>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Screen</th><th>Flutter feature</th><th>Provider</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>HomeScreen</td><td class="mono">features/subject</td><td class="mono">subjectsProvider</td><td>Read-all from <code>SubjectRepository</code>. Empty state → "Who are we supporting today?"</td></tr>
+        <tr><td>CreateSubjectScreen</td><td class="mono">features/subject</td><td class="mono">subjectDraftProvider</td><td>Modal. go_router <code>/subjects/new</code>.</td></tr>
+        <tr><td>SubjectDetailScreen</td><td class="mono">features/behavior_target</td><td class="mono">targetsBySubjectProvider(id)</td><td>Lists active + completed targets. Inline mini-chart per target.</td></tr>
+        <tr><td>CreateTargetScreen</td><td class="mono">features/behavior_target</td><td class="mono">targetDraftProvider</td><td>Two-step: define behavior → pick schedule.</td></tr>
+        <tr><td>ScheduleSetupScreen</td><td class="mono">features/reinforcement_schedule</td><td class="mono">scheduleDraftProvider</td><td>Defaults to CRF for brand-new targets.</td></tr>
+        <tr><td>DailyLogScreen</td><td class="mono">features/daily_log</td><td class="mono">logForTargetTodayProvider(id)</td><td>Upsert on <code>(targetId, date)</code>. Tap + / − to change count.</td></tr>
+        <tr><td>ProgressScreen</td><td class="mono">features/progress</td><td class="mono">logsForTargetProvider(id)</td><td>fl_chart. Data windowed 7d / 14d / 30d / all.</td></tr>
+        <tr><td>SuggestionScreen</td><td class="mono">features/analysis</td><td class="mono">analysisProvider(targetId)</td><td>Pure <code>BehaviorAnalysisEngine.run(logs, schedule)</code>. Returns <code>AnalysisResult</code>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>3 · Folder structure (per spec §9)</h2>
+<pre><span class="c">// one of six features — all follow this shape</span>
+lib/
+  features/
+    analysis/
+      data/
+        models/       <span class="c">// AnalysisResult (freezed + json_serializable)</span>
+        repositories/ <span class="c">// AnalysisRepository (wraps engine + logs read)</span>
+      domain/
+        entities/     <span class="c">// AnalysisStatus enum</span>
+        use_cases/    <span class="c">// RunAnalysisUseCase</span>
+      presentation/
+        screens/      <span class="c">// SuggestionScreen</span>
+        widgets/      <span class="c">// SuggestionCard, WhyThisWorksSheet</span>
+        providers/    <span class="c">// analysisProvider(targetId) — riverpod_generator</span>
+  shared/
+    theme/            <span class="c">// AppTheme — exact tokens from §1 above</span>
+    widgets/          <span class="c">// Pill, StatCard, ProgressSparkline</span>
+  main.dart           <span class="c">// Hive init, box registration, router</span>
+</pre>
+
+  <h2>4 · Analysis engine (implement exactly per spec §5)</h2>
+  <p>Pure Dart, no Flutter imports. Lives at <code>lib/features/analysis/domain/use_cases/behavior_analysis_engine.dart</code>. Takes logs + current schedule, returns <code>AnalysisResult</code>. Deterministic order — check in this sequence:</p>
+  <ol>
+    <li><span class="pill accent">baseline</span> fewer than 3 days logged → "Keep observing"</li>
+    <li><span class="pill ok">goalReached</span> last 7 days all ≥ goal → mark complete</li>
+    <li><span class="pill warn">extinctionRisk</span> last 3 days with <code>reinforcementGiven == false</code></li>
+    <li><span class="pill warn">plateauDetected</span> last 5 days within ±1 of each other, avg &lt; goal − 1, schedule active ≥ 7d</li>
+    <li><span class="pill ok">scheduleUpgrade</span> CRF → FR-2 after 5+ consecutive days at goal with stddev &lt; 1.5; FR → VR after 7 days at goal on FR</li>
+    <li><span class="pill accent">onTrack</span> default fallback</li>
+  </ol>
+
+  <h3>Copy (verbatim, UI-ready)</h3>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Status</th><th>Headline</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill accent">baseline</span></td><td>Keep observing — X of 3 days logged</td><td>A few baseline days help us understand where Maya is now, before we suggest a plan.</td></tr>
+        <tr><td><span class="pill ok">onTrack</span></td><td>Nice progress — on track toward goal</td><td>Keep giving a sticker every single time — consistency is what makes a new habit stick.</td></tr>
+        <tr><td><span class="pill ok">scheduleUpgrade</span></td><td>Great streak! Time to mix up the rewards</td><td>Rewarding every 2 times (instead of every time) makes the habit stronger and more lasting.</td></tr>
+        <tr><td><span class="pill warn">plateauDetected</span></td><td>Progress has flattened — let's adjust</td><td>A fresh reward or a slightly easier goal can spark new motivation.</td></tr>
+        <tr><td><span class="pill warn">extinctionRisk</span></td><td>Rewards have slipped — let's get back on track</td><td>Behaviors weaken quickly when rewards stop. Hand out a sticker today.</td></tr>
+        <tr><td><span class="pill ok">goalReached</span></td><td>Goal reached — 21 days of steady tidy-ups 🎉</td><td>The habit is established. Move to surprise rewards to keep it going long-term.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5 · Data models (recap from spec §4)</h2>
+<pre><span class="c">// Freezed + json_serializable. Hive typeAdapters: 1..4.</span>
+<span class="k">class</span> <span class="t">Subject</span> { String id; String name; int ageYears; String relationship; DateTime createdAt; }
+<span class="k">class</span> <span class="t">BehaviorTarget</span> { String id; String subjectId; String label; String description;
+                         int baselineFrequency; int goalFrequency; bool isIncreasing;
+                         DateTime startDate; bool isActive; }
+<span class="k">class</span> <span class="t">ReinforcementSchedule</span> { String id; String targetId; ScheduleType type;
+                                 int ratio; int intervalMinutes; String reinforcerDescription;
+                                 DateTime appliedAt; }
+<span class="k">class</span> <span class="t">DailyLog</span> { String id; String targetId; DateTime date; int occurrenceCount;
+                    bool reinforcementGiven; String? notes; }
+<span class="k">class</span> <span class="t">AnalysisResult</span> { AnalysisStatus status; String headline; String explanation;
+                          ScheduleType? suggestedSchedule; String? actionableAdvice; }
+</pre>
+
+  <h2>6 · Responsive — mobile vs web</h2>
+  <p>Flutter web gets the same widget tree with a <code>LayoutBuilder</code> at the screen root. Below 800px width → use the mobile screens as-is. At ≥ 800px → compose the <b>WebScreen</b> layout (sidebar · main · right rail). The main column swaps in the full-width <code>ProgressChart</code>; the right rail hosts the <code>SuggestionCard</code> and a <code>TimelineCard</code>.</p>
+<pre>LayoutBuilder(builder: (ctx, c) {
+  <span class="k">final</span> wide = c.maxWidth >= 800;
+  <span class="k">return</span> wide
+    ? DashboardLayout(subjectId: id)   <span class="c">// sidebar + main + rail</span>
+    : SubjectDetailScreen(subjectId: id);
+});</pre>
+
+  <h2>7 · Navigation (go_router)</h2>
+<pre>/                                    <span class="c">// HomeScreen</span>
+/subjects/new                        <span class="c">// CreateSubjectScreen  (modal)</span>
+/subjects/:subjectId                 <span class="c">// SubjectDetailScreen</span>
+/subjects/:subjectId/targets/new     <span class="c">// CreateTargetScreen   (modal)</span>
+/targets/:targetId/schedule          <span class="c">// ScheduleSetupScreen</span>
+/targets/:targetId/log               <span class="c">// DailyLogScreen</span>
+/targets/:targetId/progress          <span class="c">// ProgressScreen</span>
+/targets/:targetId/suggestion        <span class="c">// SuggestionScreen</span>
+</pre>
+
+  <h2>8 · Seed data for the preview states</h2>
+  <p>Ship a dev-only <code>SeedService</code> that loads on first launch when <code>kDebugMode</code>. Creates subject Maya (6, parent) and target "Tidying up toys after play" (baseline 1, goal 4, increasing). Generates 21 days of logs per state in <code>lib/features/analysis/data/fixtures.dart</code>.</p>
+
+  <h2>9 · Definition of done</h2>
+  <ul>
+    <li>Happy path works end-to-end on mobile AND web without layout breakage.</li>
+    <li><code>BehaviorAnalysisEngine.run()</code> returns correct <code>AnalysisStatus</code> for each of the 6 fixture histories in the preview.</li>
+    <li>Progress chart matches reference: occurrence line, green points ≥ goal / amber points below, dashed goal line, schedule-change marker, today-pulse.</li>
+    <li>All copy comes from §4 of this doc — no psych jargon in the UI.</li>
+    <li>Hive boxes persist across app restart.</li>
+  </ul>
+
+  <h2>10 · Out of scope (spec §8)</h2>
+  <p>No auth, no backend, no push, no cloud sync, no punishment-based interventions, no media attachments to logs.</p>
+</div>
+</body>
+</html>
