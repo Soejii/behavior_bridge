@@ -20,7 +20,7 @@ class BehaviorAnalysisEngine {
     final sorted = [...logs]..sort((a, b) => a.date.compareTo(b.date));
     final goal = target.goalFrequency;
 
-    // 1. baseline — 3 or fewer days logged (spec copy "3 of 3 days" confirms <=3 is still baseline)
+    // 1. baseline — fewer than 3 days logged
     if (sorted.length <= 3) {
       return AnalysisResult(
         status: AnalysisStatus.baseline,

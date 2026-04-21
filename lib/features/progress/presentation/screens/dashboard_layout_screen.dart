@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 import 'package:behavior_bridge/features/analysis/presentation/providers/analysis_providers.dart';
 import 'package:behavior_bridge/features/behavior_target/presentation/providers/behavior_target_providers.dart';
+import 'package:behavior_bridge/features/daily_log/domain/entities/daily_log_entity.dart';
 import 'package:behavior_bridge/features/daily_log/presentation/providers/daily_log_providers.dart';
 import 'package:behavior_bridge/features/reinforcement_schedule/presentation/providers/reinforcement_schedule_providers.dart';
 import 'package:behavior_bridge/shared/core/infrastructure/routes/route_name.dart';
@@ -17,19 +18,24 @@ class DashboardLayoutScreen extends ConsumerWidget {
   const DashboardLayoutScreen({
     super.key,
     required this.subjectId,
-    required this.targetId,
+    this.targetId,
   });
 
   final String subjectId;
-  final String targetId;
+  final String? targetId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
-    final targetAsync = ref.watch(targetByIdProvider(targetId));
-    final logsAsync = ref.watch(logsByTargetProvider(targetId));
-    final analysisAsync = ref.watch(analysisProvider(targetId));
-    final scheduleAsync = ref.watch(currentScheduleProvider(targetId));
+    final targetsAsync = ref.watch(targetsBySubjectProvider(subjectId));
+    final targets = targetsAsync.valueOrNull ?? [];
+    
+    final effectiveTargetId = targetId ?? (targets.isNotEmpty ? targets.first.id : null);
+
+    final targetAsync = effectiveTargetId != null ? ref.watch(targetByIdProvider(effectiveTargetId)) : const AsyncValue.data(null);
+    final logsAsync = effectiveTargetId != null ? ref.watch(logsByTargetProvider(effectiveTargetId)) : const AsyncValue.data(<DailyLogEntity>[]);
+    final analysisAsync = effectiveTargetId != null ? ref.watch(analysisProvider(effectiveTargetId)) : const AsyncValue.loading();
+    final scheduleAsync = effectiveTargetId != null ? ref.watch(currentScheduleProvider(effectiveTargetId)) : const AsyncValue.data(null);
 
     final target = targetAsync.valueOrNull;
     final logs = logsAsync.valueOrNull ?? [];
@@ -50,14 +56,16 @@ class DashboardLayoutScreen extends ConsumerWidget {
       backgroundColor: b.bg,
       body: Row(
         children: [
-          _Sidebar(subjectId: subjectId, targetId: targetId),
+          _Sidebar(subjectId: subjectId, targetId: effectiveTargetId),
           Expanded(
             flex: 3,
-            child: Column(
+            child: effectiveTargetId == null 
+              ? Center(child: Text('No targets yet', style: TextStyle(color: b.ink3)))
+              : Column(
               children: [
                 Container(
-                  height: 56.h,
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  height: 72.h,
+                  padding: EdgeInsets.symmetric(horizontal: 28.w),
                   decoration: BoxDecoration(
                     color: b.card,
                     border: Border(bottom: BorderSide(color: b.line)),
@@ -65,28 +73,49 @@ class DashboardLayoutScreen extends ConsumerWidget {
                   child: Row(
                     children: [
                       if (target != null)
-                        Text(
-                          target.label,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15.sp,
-                            color: b.ink,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Behavior target',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 11.sp,
+                                color: b.ink3,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              target.label,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20.sp,
+                                letterSpacing: -0.3,
+                                color: b.ink,
+                              ),
+                            ),
+                          ],
                         ),
                       const Spacer(),
-                      TextButton(
+                      FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: b.accent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                        ),
                         onPressed: () => context.goNamed(
                           RouteName.dailyLog,
-                          pathParameters: {'targetId': targetId},
+                          pathParameters: {'targetId': effectiveTargetId},
                         ),
-                        child: Text(
+                        icon: Icon(Icons.check, size: 16.r, color: Colors.white),
+                        label: Text(
                           'Log today',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w600,
                             fontSize: 13.sp,
-                            color: b.accent,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -95,47 +124,39 @@ class DashboardLayoutScreen extends ConsumerWidget {
                 ),
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.all(24.w),
+                    padding: EdgeInsets.all(28.w),
                     children: [
+                      if (target != null)
+                        GridView.count(
+                          crossAxisCount: 5,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisSpacing: 12.w,
+                          childAspectRatio: 1.2,
+                          children: [
+                            StatCardWidget(label: 'Goal', value: '${target.goalFrequency}×/day', hint: 'Increase'),
+                            StatCardWidget(label: 'Baseline', value: '${target.baselineFrequency}×/day', hint: 'Start'),
+                            StatCardWidget(label: 'Avg/day', value: _avg(values, values.length).toStringAsFixed(1), hint: 'Last ${values.length}d'),
+                            StatCardWidget(label: 'At goal', value: '${values.where((v) => v >= target.goalFrequency).length}d', hint: 'of ${values.length}d logged'),
+                            StatCardWidget(label: 'Schedule', value: schedule?.type.shortLabel ?? 'CRF', hint: 'Current'),
+                          ],
+                        ),
+                      SizedBox(height: 20.h),
                       Container(
                         padding: EdgeInsets.all(20.w),
                         decoration: BoxDecoration(
                           color: b.card,
-                          borderRadius: BorderRadius.circular(14.r),
+                          borderRadius: BorderRadius.circular(20.r),
                           border: Border.all(color: b.line),
                           boxShadow: b.sh1,
                         ),
                         child: ProgressChartWidget(
                           values: values,
                           goal: target?.goalFrequency ?? 4,
-                          height: 220,
+                          height: 240,
                           scheduleChanges: scheduleChanges,
                         ),
                       ),
-                      SizedBox(height: 16.h),
-                      if (target != null && logs.isNotEmpty)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: StatCardWidget(
-                                label: '7-day avg',
-                                value: _avg(values, 7)
-                                    .toStringAsFixed(1),
-                                hint: 'goal: ${target.goalFrequency}',
-                                emphasize: _avg(values, 7) >=
-                                    target.goalFrequency,
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: StatCardWidget(
-                                label: 'Days logged',
-                                value: '${logs.length}',
-                                hint: schedule?.type.shortLabel ?? '',
-                              ),
-                            ),
-                          ],
-                        ),
                     ],
                   ),
                 ),
@@ -148,7 +169,9 @@ class DashboardLayoutScreen extends ConsumerWidget {
               color: b.card,
               border: Border(left: BorderSide(color: b.line)),
             ),
-            child: ListView(
+            child: effectiveTargetId == null 
+              ? const SizedBox()
+              : ListView(
               padding: EdgeInsets.all(16.w),
               children: [
                 Text(
@@ -195,9 +218,9 @@ class DashboardLayoutScreen extends ConsumerWidget {
 }
 
 class _Sidebar extends ConsumerWidget {
-  const _Sidebar({required this.subjectId, required this.targetId});
+  const _Sidebar({required this.subjectId, this.targetId});
   final String subjectId;
-  final String targetId;
+  final String? targetId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -263,8 +286,9 @@ class _Sidebar extends ConsumerWidget {
                   final active = t.id == targetId;
                   return GestureDetector(
                     onTap: () => context.goNamed(
-                      RouteName.progress,
-                      pathParameters: {'targetId': t.id},
+                      RouteName.subjectDetail,
+                      pathParameters: {'subjectId': subjectId},
+                      queryParameters: {'targetId': t.id},
                     ),
                     child: Container(
                       padding: EdgeInsets.symmetric(

@@ -113,7 +113,7 @@ class _TargetCard extends ConsumerWidget {
     final logsAsync = ref.watch(logsByTargetProvider(target.id));
     return GestureDetector(
       onTap: () => context.goNamed(
-        RouteName.dailyLog,
+        RouteName.progress,
         pathParameters: {'targetId': target.id},
       ),
       child: Container(

@@ -43,9 +43,18 @@ GoRouter appRouter(Ref ref) => GoRouter(
               path: 'subjects/:subjectId',
               name: RouteName.subjectDetail,
               parentNavigatorKey: rootNavigatorKey,
-              builder: (_, state) => SubjectDetailScreen(
-                subjectId: state.pathParameters['subjectId']!,
-              ),
+              builder: (_, state) {
+                final subjectId = state.pathParameters['subjectId']!;
+                final targetId = state.uri.queryParameters['targetId'];
+                return LayoutBuilder(
+                  builder: (ctx, constraints) => constraints.maxWidth >= 800
+                      ? DashboardLayoutScreen(
+                          subjectId: subjectId,
+                          targetId: targetId,
+                        )
+                      : SubjectDetailScreen(subjectId: subjectId),
+                );
+              },
               routes: [
                 GoRoute(
                   path: 'targets/new',
@@ -77,18 +86,9 @@ GoRouter appRouter(Ref ref) => GoRouter(
               path: 'targets/:targetId/progress',
               name: RouteName.progress,
               parentNavigatorKey: rootNavigatorKey,
-              builder: (_, state) {
-                final targetId = state.pathParameters['targetId']!;
-                final subjectId = state.uri.queryParameters['subjectId'] ?? '';
-                return LayoutBuilder(
-                  builder: (ctx, constraints) => constraints.maxWidth >= 800
-                      ? DashboardLayoutScreen(
-                          subjectId: subjectId,
-                          targetId: targetId,
-                        )
-                      : ProgressScreen(targetId: targetId),
-                );
-              },
+              builder: (_, state) => ProgressScreen(
+                targetId: state.pathParameters['targetId']!,
+              ),
             ),
             GoRoute(
               path: 'targets/:targetId/suggestion',
