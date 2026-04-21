@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,9 +17,9 @@ class ScheduleSetupScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
     final selected = useState(ScheduleType.crf);
-    final reinforcerCtrl =
-        useTextEditingController(text: 'Sticker on the chart');
+    final reinforcerCtrl = useTextEditingController(text: 'Sticker on the chart');
     final saving = useState(false);
 
     Future<void> save() async {
@@ -44,12 +45,12 @@ class ScheduleSetupScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: b.bg,
-      appBar: const CustomAppBarWidget(title: 'Reinforcement schedule'),
+      appBar: CustomAppBarWidget(title: l.reinforcementSchedule),
       body: ListView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'How will you reward the behavior?',
+            l.howWillYouReward,
             style: TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
@@ -57,9 +58,9 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               color: b.ink,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'Start with CRF — reward every single time.',
+            l.startWithCrf,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 13,
@@ -67,14 +68,14 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               height: 1.5,
             ),
           ),
-          SizedBox(height: 18),
+          const SizedBox(height: 18),
           ...ScheduleType.values.map(
             (t) => Padding(
-              padding: EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 10),
               child: GestureDetector(
                 onTap: () => selected.value = t,
                 child: Container(
-                  padding: EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: selected.value == t ? b.accentTint : b.card,
                     borderRadius: BorderRadius.circular(12),
@@ -104,7 +105,7 @@ class ScheduleSetupScreen extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           t.description,
@@ -123,9 +124,9 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'WHAT\'S THE REWARD?',
+            l.whatsTheReward,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 11,
@@ -134,16 +135,15 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               letterSpacing: 0.6,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           TextField(
             controller: reinforcerCtrl,
             decoration: InputDecoration(
-              hintText: 'e.g. Sticker on the chart',
+              hintText: l.reinforcerHint,
               hintStyle: TextStyle(fontFamily: 'Inter', color: b.ink4),
               filled: true,
               fillColor: b.card,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: b.line),
@@ -163,19 +163,19 @@ class ScheduleSetupScreen extends HookConsumerWidget {
               color: b.ink,
             ),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: b.accent,
-              minimumSize: Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             onPressed: saving.value ? null : save,
             child: Text(
-              'Save schedule — start logging',
-              style: TextStyle(
+              l.saveSchedule,
+              style: const TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 fontSize: 15,

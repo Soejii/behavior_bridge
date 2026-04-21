@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ class SubjectDetailScreen extends ConsumerWidget {
     );
     final targetsAsync = ref.watch(targetsBySubjectProvider(subjectId));
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: b.bg,
@@ -51,7 +53,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                         Icon(Icons.chevron_left, size: 20, color: b.accent),
                         const SizedBox(width: 2),
                         Text(
-                          'Back',
+                          l.back,
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 15,
@@ -125,7 +127,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                                     ),
                                   ),
                                   Text(
-                                    '${subject.ageYears} years · ${subject.relationship} · since $createdFormat',
+                                    l.profileSubtitle(subject.ageYears, subject.relationship, createdFormat),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -149,7 +151,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              'BEHAVIOR TARGETS',
+                              l.sectionBehaviorTargets,
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 12,
@@ -168,7 +170,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                                   Icon(Icons.add, size: 14, color: b.accent),
                                   const SizedBox(width: 3),
                                   Text(
-                                    'New target',
+                                    l.newTarget,
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 13,
@@ -191,7 +193,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                         ),
                         error: (e, _) => Padding(
                           padding: const EdgeInsets.all(20),
-                          child: Text('Error loading targets: $e'),
+                          child: Text(l.errorLoadingTargets(e)),
                         ),
                         data: (targets) {
                           if (targets.isEmpty) {
@@ -224,7 +226,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                                   child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      'COMPLETED',
+                                      l.sectionCompleted,
                                       style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 12,
@@ -271,7 +273,7 @@ class SubjectDetailScreen extends ConsumerWidget {
             Icon(Icons.track_changes, size: 48, color: b.accent),
             const SizedBox(height: 12),
             Text(
-              'No targets yet',
+              AppLocalizations.of(context)!.noTargetsYet,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w700,
@@ -281,7 +283,7 @@ class SubjectDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Add a behavior to track.',
+              AppLocalizations.of(context)!.addBehaviorHint,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
@@ -308,23 +310,23 @@ class _ActiveTargetCard extends ConsumerWidget {
     final logs = logsAsync.valueOrNull ?? [];
     final values = logs.map((l) => l.occurrenceCount).toList();
 
-    // We get the PillTone based on analysis
+    final l = AppLocalizations.of(context)!;
     PillTone tone = PillTone.neutral;
-    String pillText = 'Analyzing';
+    String pillText = l.pillAnalyzing;
     if (analysisAsync.hasValue && analysisAsync.value != null) {
        final status = analysisAsync.value!.status.name;
        if (status == 'baseline') {
          tone = PillTone.accent;
-         pillText = 'Baseline';
+         pillText = l.pillBaseline;
        } else if (status == 'onTrack' || status == 'scheduleUpgrade' || status == 'goalReached') {
          tone = PillTone.ok;
-         pillText = status == 'goalReached' ? 'Goal reached' : (status == 'scheduleUpgrade' ? 'Ready to upgrade' : 'On track');
+         pillText = status == 'goalReached' ? l.pillGoalReached : (status == 'scheduleUpgrade' ? l.pillReadyToUpgrade : l.pillOnTrack);
        } else if (status == 'plateauDetected') {
          tone = PillTone.warn;
-         pillText = 'Plateau detected';
+         pillText = l.pillPlateauDetected;
        } else if (status == 'extinctionRisk') {
          tone = PillTone.risk;
-         pillText = 'Reward lapse';
+         pillText = l.pillRewardLapse;
        }
     }
 
@@ -369,7 +371,7 @@ class _ActiveTargetCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Goal: ${target.goalFrequency}x/day · ${target.isIncreasing ? "Increase" : "Decrease"}',
+                      l.goalMeta(target.goalFrequency, target.isIncreasing ? l.dirIncrease : l.dirDecrease),
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -407,9 +409,9 @@ class _ActiveTargetCard extends ConsumerWidget {
                     pathParameters: {'targetId': target.id},
                   ),
                   icon: const Icon(Icons.check, size: 16),
-                  label: const Text(
-                    'Log today',
-                    style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
+                  label: Text(
+                    l.logToday,
+                    style: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                 ),
               ),
@@ -426,7 +428,7 @@ class _ActiveTargetCard extends ConsumerWidget {
                   ),
                   icon: Icon(Icons.trending_up, size: 16, color: b.ink),
                   label: Text(
-                    'Progress',
+                    l.progress,
                     style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 14, color: b.ink),
                   ),
                 ),
@@ -446,6 +448,7 @@ class _SecondaryTargetCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
     final logsAsync = ref.watch(logsByTargetProvider(target.id));
     final logs = logsAsync.valueOrNull ?? [];
 
@@ -490,7 +493,7 @@ class _SecondaryTargetCard extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'Goal: ${target.goalFrequency}x/day · ${logs.length} days logged',
+                    l.goalMeta(target.goalFrequency, l.daysLogged(logs.length)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -517,6 +520,7 @@ class _CompletedTargetCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
     final logsAsync = ref.watch(logsByTargetProvider(target.id));
     final logs = logsAsync.valueOrNull ?? [];
 
@@ -560,7 +564,7 @@ class _CompletedTargetCard extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'Goal reached · ${logs.length} days logged',
+                    l.goalReachedMeta(logs.length),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

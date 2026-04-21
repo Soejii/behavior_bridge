@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,6 +24,7 @@ class ProgressScreen extends ConsumerWidget {
     final logsAsync = ref.watch(logsByTargetProvider(targetId));
     final scheduleAsync = ref.watch(currentScheduleProvider(targetId));
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
 
     if (targetAsync.isLoading || logsAsync.isLoading) {
       return const LoadingScreen();
@@ -34,8 +36,10 @@ class ProgressScreen extends ConsumerWidget {
     if (target == null) {
       return Scaffold(
         body: Center(
-          child: Text('Target not found',
-              style: TextStyle(fontFamily: 'Inter', color: b.ink3)),
+          child: Text(
+            l.targetNotFound,
+            style: TextStyle(fontFamily: 'Inter', color: b.ink3),
+          ),
         ),
       );
     }
@@ -65,7 +69,7 @@ class ProgressScreen extends ConsumerWidget {
       backgroundColor: b.bg,
       appBar: CustomAppBarWidget(
         title: target.label,
-        subtitle: '${logs.length} days logged',
+        subtitle: l.daysLogged(logs.length),
         actions: [
           TextButton(
             onPressed: () => context.pushNamed(
@@ -73,7 +77,7 @@ class ProgressScreen extends ConsumerWidget {
               pathParameters: {'targetId': targetId},
             ),
             child: Text(
-              'Analyse',
+              l.analyse,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
@@ -85,10 +89,10 @@ class ProgressScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: b.card,
               borderRadius: BorderRadius.circular(14),
@@ -101,40 +105,40 @@ class ProgressScreen extends ConsumerWidget {
               scheduleChanges: scheduleChanges,
             ),
           ),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
                 child: StatCardWidget(
-                  label: '7-day avg',
+                  label: l.sevenDayAvg,
                   value: avg7.toStringAsFixed(1),
-                  hint: 'goal: ${target.goalFrequency}',
+                  hint: l.goalHint(target.goalFrequency),
                   emphasize: avg7 >= target.goalFrequency,
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: StatCardWidget(
-                  label: 'All-time avg',
+                  label: l.allTimeAvg,
                   value: avg.toStringAsFixed(1),
-                  hint: '${logs.length} sessions',
+                  hint: l.sessions(logs.length),
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: StatCardWidget(
-                  label: 'Days logged',
+                  label: l.daysLoggedLabel,
                   value: '${logs.length}',
                   hint: schedule != null ? schedule.type.shortLabel : 'CRF',
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: b.accent,
-              minimumSize: Size.fromHeight(44),
+              minimumSize: const Size.fromHeight(44),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -144,8 +148,8 @@ class ProgressScreen extends ConsumerWidget {
               pathParameters: {'targetId': targetId},
             ),
             child: Text(
-              'Log today',
-              style: TextStyle(
+              l.logToday,
+              style: const TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
                 fontSize: 15,

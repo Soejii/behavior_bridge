@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,7 @@ class CreateTargetScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
     final labelCtrl = useTextEditingController();
     final descCtrl = useTextEditingController();
     final baseline = useState(1);
@@ -50,68 +52,68 @@ class CreateTargetScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: b.bg,
-      appBar: const CustomAppBarWidget(title: 'New target'),
+      appBar: CustomAppBarWidget(title: l.newTargetTitle),
       body: Form(
         key: formKey,
         child: ListView(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           children: [
-            fieldLabel(b, 'BEHAVIOR LABEL'),
-            SizedBox(height: 6),
+            _fieldLabel(b, l.behaviorLabelField),
+            const SizedBox(height: 6),
             TextFormField(
               controller: labelCtrl,
-              decoration: inputDec(b, 'e.g. Tidying up toys after play'),
+              decoration: _inputDec(b, l.behaviorLabelHint),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  (v == null || v.trim().isEmpty) ? l.fieldRequired : null,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 15,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 16),
-            fieldLabel(b, 'DESCRIPTION (OPTIONAL)'),
-            SizedBox(height: 6),
+            const SizedBox(height: 16),
+            _fieldLabel(b, l.descriptionField),
+            const SizedBox(height: 6),
             TextFormField(
               controller: descCtrl,
               minLines: 2,
               maxLines: 4,
-              decoration: inputDec(b, 'Describe the behavior…'),
+              decoration: _inputDec(b, l.descriptionHint),
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 16),
-            fieldLabel(b, 'DIRECTION'),
-            SizedBox(height: 8),
+            const SizedBox(height: 16),
+            _fieldLabel(b, l.directionLabel),
+            const SizedBox(height: 8),
             Row(
               children: [
                 _RadioChip(
-                  label: 'Increasing',
+                  label: l.increasing,
                   selected: isIncreasing.value,
                   onTap: () => isIncreasing.value = true,
                   b: b,
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 _RadioChip(
-                  label: 'Decreasing',
+                  label: l.decreasing,
                   selected: !isIncreasing.value,
                   onTap: () => isIncreasing.value = false,
                   b: b,
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      fieldLabel(b, 'BASELINE / DAY'),
-                      SizedBox(height: 6),
+                      _fieldLabel(b, l.baselinePerDay),
+                      const SizedBox(height: 6),
                       _NumberStepper(
                         value: baseline.value,
                         min: 0,
@@ -122,13 +124,13 @@ class CreateTargetScreen extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      fieldLabel(b, 'GOAL / DAY'),
-                      SizedBox(height: 6),
+                      _fieldLabel(b, l.goalPerDayField),
+                      const SizedBox(height: 6),
                       _NumberStepper(
                         value: goal.value,
                         min: 1,
@@ -141,19 +143,19 @@ class CreateTargetScreen extends HookConsumerWidget {
                 ),
               ],
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: b.accent,
-                minimumSize: Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: saving.value ? null : save,
               child: Text(
-                'Next — set schedule',
-                style: TextStyle(
+                l.nextSetSchedule,
+                style: const TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -166,7 +168,7 @@ class CreateTargetScreen extends HookConsumerWidget {
     );
   }
 
-  Widget fieldLabel(BrandPalette b, String text) => Text(
+  Widget _fieldLabel(BrandPalette b, String text) => Text(
         text,
         style: TextStyle(
           fontFamily: 'Inter',
@@ -177,12 +179,12 @@ class CreateTargetScreen extends HookConsumerWidget {
         ),
       );
 
-  InputDecoration inputDec(BrandPalette b, String hint) => InputDecoration(
+  InputDecoration _inputDec(BrandPalette b, String hint) => InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(fontFamily: 'Inter', color: b.ink4),
         filled: true,
         fillColor: b.card,
-        contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: b.line),
@@ -214,7 +216,7 @@ class _RadioChip extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           decoration: BoxDecoration(
             color: selected ? b.accent : b.card,
             borderRadius: BorderRadius.circular(999),
@@ -251,9 +253,8 @@ class _NumberStepper extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           IconButton(
-            onPressed:
-                value > min ? () => onChanged(value - 1) : null,
-            icon: Icon(Icons.remove, size: 18),
+            onPressed: value > min ? () => onChanged(value - 1) : null,
+            icon: const Icon(Icons.remove, size: 18),
             color: b.ink2,
             disabledColor: b.ink4,
           ),
@@ -267,9 +268,8 @@ class _NumberStepper extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed:
-                value < max ? () => onChanged(value + 1) : null,
-            icon: Icon(Icons.add, size: 18),
+            onPressed: value < max ? () => onChanged(value + 1) : null,
+            icon: const Icon(Icons.add, size: 18),
             color: b.ink2,
             disabledColor: b.ink4,
           ),

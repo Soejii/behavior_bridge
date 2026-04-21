@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,6 +21,7 @@ class DailyLogScreen extends HookConsumerWidget {
     final targetAsync = ref.watch(targetByIdProvider(targetId));
     final todayLogAsync = ref.watch(logForTargetTodayProvider(targetId));
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
 
     return targetAsync.when(
       loading: () => const LoadingScreen(),
@@ -29,7 +31,7 @@ class DailyLogScreen extends HookConsumerWidget {
           return Scaffold(
             body: Center(
               child: Text(
-                'Target not found',
+                l.targetNotFound,
                 style: TextStyle(fontFamily: 'Inter', color: b.ink3),
               ),
             ),
@@ -69,10 +71,10 @@ class DailyLogScreen extends HookConsumerWidget {
                 subtitle: DateFormat('EEEE, MMM d').format(DateTime.now()),
               ),
               body: ListView(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 children: [
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: b.card,
                       borderRadius: BorderRadius.circular(16),
@@ -82,7 +84,7 @@ class DailyLogScreen extends HookConsumerWidget {
                     child: Column(
                       children: [
                         Text(
-                          'How many times today?',
+                          l.howManyTimesToday,
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 14,
@@ -90,13 +92,12 @@ class DailyLogScreen extends HookConsumerWidget {
                             color: b.ink2,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap:
-                                  count.value > 0 ? () => count.value-- : null,
+                              onTap: count.value > 0 ? () => count.value-- : null,
                               child: Container(
                                 width: 48,
                                 height: 48,
@@ -109,7 +110,7 @@ class DailyLogScreen extends HookConsumerWidget {
                                     size: 20),
                               ),
                             ),
-                            SizedBox(width: 32),
+                            const SizedBox(width: 32),
                             Text(
                               '${count.value}',
                               style: TextStyle(
@@ -121,7 +122,7 @@ class DailyLogScreen extends HookConsumerWidget {
                                     : b.ink,
                               ),
                             ),
-                            SizedBox(width: 32),
+                            const SizedBox(width: 32),
                             GestureDetector(
                               onTap: () => count.value++,
                               child: Container(
@@ -136,9 +137,9 @@ class DailyLogScreen extends HookConsumerWidget {
                             ),
                           ],
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'goal: ${target.goalFrequency} / day',
+                          l.goalPerDay(target.goalFrequency),
                           style: TextStyle(
                             fontFamily: 'IBMPlexMono',
                             fontSize: 12,
@@ -148,9 +149,9 @@ class DailyLogScreen extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: b.card,
                       borderRadius: BorderRadius.circular(14),
@@ -163,7 +164,7 @@ class DailyLogScreen extends HookConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Reward given today?',
+                                l.rewardGivenToday,
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 14,
@@ -171,9 +172,9 @@ class DailyLogScreen extends HookConsumerWidget {
                                   color: b.ink,
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
-                                'Consistency builds the habit.',
+                                l.consistencyBuildsHabit,
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 12,
@@ -191,19 +192,19 @@ class DailyLogScreen extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 28),
+                  const SizedBox(height: 28),
                   FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: b.accent,
-                      minimumSize: Size.fromHeight(48),
+                      minimumSize: const Size.fromHeight(48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: saving.value ? null : save,
                     child: Text(
-                      'Save today\'s log',
-                      style: TextStyle(
+                      l.saveTodaysLog,
+                      style: const TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         fontSize: 15,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 import 'package:behavior_bridge/features/analysis/domain/entities/analysis_status.dart';
 import 'package:behavior_bridge/features/analysis/presentation/providers/analysis_providers.dart';
+import 'package:behavior_bridge/features/daily_log/presentation/providers/daily_log_providers.dart';
 import 'package:behavior_bridge/features/reinforcement_schedule/domain/entities/schedule_type.dart';
 import 'package:behavior_bridge/features/reinforcement_schedule/presentation/providers/reinforcement_schedule_providers.dart';
 import 'package:behavior_bridge/shared/screens/error_screen.dart';
@@ -18,17 +20,19 @@ class SuggestionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analysisAsync = ref.watch(analysisProvider(targetId));
+    final logsAsync = ref.watch(logsByTargetProvider(targetId));
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: b.bg,
       appBar: CustomAppBarWidget(
-        title: 'What to do next',
+        title: l.whatToDoNext,
         actions: [
           TextButton(
             onPressed: () {},
             child: Text(
-              'Why?',
+              l.whyButton,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
@@ -43,6 +47,15 @@ class SuggestionScreen extends ConsumerWidget {
         loading: () => const LoadingScreen(),
         error: (e, _) => ErrorScreen(error: e),
         data: (result) {
+          final logCount = logsAsync.valueOrNull?.length ?? 0;
+          final isCrfUpgrade = result.suggestedSchedule == ScheduleType.fr2;
+
+          final headline = _headline(result.status, l, logCount, isCrfUpgrade);
+          final explanation = _explanation(result.status, l, isCrfUpgrade);
+          final advice = _advice(result.status, l, isCrfUpgrade);
+          final whyText = _why(result.status, l);
+          final actionText = _action(result.status, l);
+
           final tone = _getTone(result.status);
           final hero = _getHeroColor(b, tone);
           final heroTint = _getHeroTint(b, tone);
@@ -56,8 +69,7 @@ class SuggestionScreen extends ConsumerWidget {
                   children: [
                     Container(
                       color: heroTint,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 22),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -73,7 +85,7 @@ class SuggestionScreen extends ConsumerWidget {
                             child: Icon(icon, size: 22, color: Colors.white),
                           ),
                           Text(
-                            result.headline,
+                            headline,
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
@@ -85,7 +97,7 @@ class SuggestionScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            result.explanation,
+                            explanation,
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
@@ -97,14 +109,13 @@ class SuggestionScreen extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 18),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (result.actionableAdvice != null) ...[
+                          if (advice != null) ...[
                             Text(
-                              'Try this',
+                              l.tryThis,
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
@@ -133,13 +144,12 @@ class SuggestionScreen extends ConsumerWidget {
                                       borderRadius: BorderRadius.circular(7),
                                     ),
                                     alignment: Alignment.center,
-                                    child: Icon(Icons.flag,
-                                        size: 16, color: b.accentFg),
+                                    child: Icon(Icons.flag, size: 16, color: b.accentFg),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
-                                      result.actionableAdvice!,
+                                      advice,
                                       style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 14,
@@ -155,7 +165,7 @@ class SuggestionScreen extends ConsumerWidget {
                             const SizedBox(height: 16),
                           ],
                           Text(
-                            'Why this works',
+                            l.whyThisWorks,
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
@@ -174,7 +184,7 @@ class SuggestionScreen extends ConsumerWidget {
                               boxShadow: b.sh1,
                             ),
                             child: Text(
-                              _getWhyText(result.status),
+                              whyText,
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
@@ -193,24 +203,19 @@ class SuggestionScreen extends ConsumerWidget {
                               ),
                             ),
                             onPressed: () async {
-                              if (result.status ==
-                                      AnalysisStatus.scheduleUpgrade ||
+                              if (result.status == AnalysisStatus.scheduleUpgrade ||
                                   result.status == AnalysisStatus.goalReached) {
-                                final newSchedule = result.suggestedSchedule ??
-                                    ScheduleType.crf;
+                                final newSchedule =
+                                    result.suggestedSchedule ?? ScheduleType.crf;
                                 final current = ref
                                     .read(currentScheduleProvider(targetId))
                                     .valueOrNull;
                                 await ref
-                                    .read(
-                                        reinforcementScheduleControllerProvider
-                                            .notifier)
+                                    .read(reinforcementScheduleControllerProvider.notifier)
                                     .apply(
                                       targetId: targetId,
                                       type: newSchedule,
-                                      ratio: newSchedule == ScheduleType.vr3
-                                          ? 3
-                                          : 2,
+                                      ratio: newSchedule == ScheduleType.vr3 ? 3 : 2,
                                       intervalMinutes: 0,
                                       reinforcerDescription:
                                           current?.reinforcerDescription ??
@@ -220,7 +225,8 @@ class SuggestionScreen extends ConsumerWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Schedule automatically upgraded to ${newSchedule.shortLabel}'),
+                                        l.scheduleUpgradedTo(newSchedule.shortLabel),
+                                      ),
                                       backgroundColor: b.ok,
                                       behavior: SnackBarBehavior.floating,
                                     ),
@@ -232,7 +238,7 @@ class SuggestionScreen extends ConsumerWidget {
                               }
                             },
                             child: Text(
-                              _getPrimaryActionText(result.status),
+                              actionText,
                               style: const TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
@@ -252,7 +258,7 @@ class SuggestionScreen extends ConsumerWidget {
                             ),
                             onPressed: () => context.pop(),
                             child: Text(
-                              'Remind me tomorrow',
+                              l.remindMeTomorrow,
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
@@ -274,20 +280,110 @@ class SuggestionScreen extends ConsumerWidget {
     );
   }
 
+  String _headline(
+    AnalysisStatus status,
+    AppLocalizations l,
+    int logCount,
+    bool isCrfUpgrade,
+  ) {
+    switch (status) {
+      case AnalysisStatus.baseline:
+        return l.baselineHeadline(logCount);
+      case AnalysisStatus.goalReached:
+        return l.goalReachedHeadline;
+      case AnalysisStatus.extinctionRisk:
+        return l.extinctionRiskHeadline;
+      case AnalysisStatus.plateauDetected:
+        return l.plateauHeadline;
+      case AnalysisStatus.scheduleUpgrade:
+        return isCrfUpgrade ? l.scheduleUpgradeCrfHeadline : l.scheduleUpgradeFrHeadline;
+      case AnalysisStatus.onTrack:
+        return l.onTrackHeadline;
+    }
+  }
+
+  String _explanation(
+    AnalysisStatus status,
+    AppLocalizations l,
+    bool isCrfUpgrade,
+  ) {
+    switch (status) {
+      case AnalysisStatus.baseline:
+        return l.baselineExplanation;
+      case AnalysisStatus.goalReached:
+        return l.goalReachedExplanation;
+      case AnalysisStatus.extinctionRisk:
+        return l.extinctionRiskExplanation;
+      case AnalysisStatus.plateauDetected:
+        return l.plateauExplanation;
+      case AnalysisStatus.scheduleUpgrade:
+        return isCrfUpgrade ? l.scheduleUpgradeCrfExplanation : l.scheduleUpgradeFrExplanation;
+      case AnalysisStatus.onTrack:
+        return l.onTrackExplanation;
+    }
+  }
+
+  String? _advice(
+    AnalysisStatus status,
+    AppLocalizations l,
+    bool isCrfUpgrade,
+  ) {
+    switch (status) {
+      case AnalysisStatus.extinctionRisk:
+        return l.extinctionRiskAdvice;
+      case AnalysisStatus.plateauDetected:
+        return l.plateauAdvice;
+      case AnalysisStatus.scheduleUpgrade:
+        return isCrfUpgrade ? l.scheduleUpgradeCrfAdvice : l.scheduleUpgradeFrAdvice;
+      default:
+        return null;
+    }
+  }
+
+  String _why(AnalysisStatus status, AppLocalizations l) {
+    switch (status) {
+      case AnalysisStatus.scheduleUpgrade:
+        return l.whyScheduleUpgrade;
+      case AnalysisStatus.onTrack:
+        return l.whyOnTrack;
+      case AnalysisStatus.baseline:
+        return l.whyBaseline;
+      case AnalysisStatus.plateauDetected:
+        return l.whyPlateau;
+      case AnalysisStatus.extinctionRisk:
+        return l.whyExtinctionRisk;
+      case AnalysisStatus.goalReached:
+        return l.whyGoalReached;
+    }
+  }
+
+  String _action(AnalysisStatus status, AppLocalizations l) {
+    switch (status) {
+      case AnalysisStatus.scheduleUpgrade:
+        return l.actionScheduleUpgrade;
+      case AnalysisStatus.goalReached:
+        return l.actionGoalReached;
+      case AnalysisStatus.plateauDetected:
+        return l.actionPlateau;
+      case AnalysisStatus.extinctionRisk:
+        return l.actionExtinctionRisk;
+      default:
+        return l.actionDefault;
+    }
+  }
+
   String _getTone(AnalysisStatus status) {
     switch (status) {
       case AnalysisStatus.baseline:
         return 'accent';
       case AnalysisStatus.onTrack:
-        return 'ok';
       case AnalysisStatus.scheduleUpgrade:
+      case AnalysisStatus.goalReached:
         return 'ok';
       case AnalysisStatus.plateauDetected:
         return 'warn';
       case AnalysisStatus.extinctionRisk:
         return 'risk';
-      case AnalysisStatus.goalReached:
-        return 'ok';
     }
   }
 
@@ -307,44 +403,10 @@ class SuggestionScreen extends ConsumerWidget {
 
   IconData _getHeroIcon(AnalysisStatus status, String tone) {
     if (tone == 'ok') {
-      return status == AnalysisStatus.goalReached
-          ? Icons.stars
-          : Icons.auto_awesome;
+      return status == AnalysisStatus.goalReached ? Icons.stars : Icons.auto_awesome;
     }
     if (tone == 'warn') return Icons.info_outline;
     if (tone == 'risk') return Icons.warning_amber_rounded;
     return Icons.auto_awesome;
-  }
-
-  String _getWhyText(AnalysisStatus status) {
-    switch (status) {
-      case AnalysisStatus.scheduleUpgrade:
-        return 'Behaviors rewarded every single time learn fast — but they also fade fast when rewards stop. Rewarding every second time builds resilience: the brain learns "it might happen", which keeps the habit going even on days you forget.';
-      case AnalysisStatus.onTrack:
-        return 'During the early days of a new habit, consistency beats variety. Keep the rewards predictable until Maya has hit the goal 5–7 days in a row.';
-      case AnalysisStatus.baseline:
-        return 'A baseline tells us what "normal" looks like for Maya right now. Without it, we can\'t tell if progress is real — or if the reward is doing anything.';
-      case AnalysisStatus.plateauDetected:
-        return 'Plateaus usually mean the reward has lost its sparkle, or the ask has become too easy to matter. A small change — a new reward, a smaller ask — often kicks things back into gear.';
-      case AnalysisStatus.extinctionRisk:
-        return 'Behaviors depend on feedback. Three days without a reward tells Maya\'s brain "this isn\'t important" — and the habit will start to fade. Reinstate the sticker today to course-correct.';
-      case AnalysisStatus.goalReached:
-        return 'At 7+ days of consistent success, the behavior is officially a habit. Switching to surprise rewards (rather than stopping completely) keeps it strong for the long run.';
-    }
-  }
-
-  String _getPrimaryActionText(AnalysisStatus status) {
-    switch (status) {
-      case AnalysisStatus.scheduleUpgrade:
-        return 'Switch to "Every 2nd time"';
-      case AnalysisStatus.goalReached:
-        return 'Move to surprise rewards';
-      case AnalysisStatus.plateauDetected:
-        return 'Try a new reward';
-      case AnalysisStatus.extinctionRisk:
-        return 'Set a reminder';
-      default:
-        return 'Keep going';
-    }
   }
 }

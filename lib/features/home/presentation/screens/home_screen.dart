@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:behavior_bridge/app/theme/brand_palette.dart';
 import 'package:behavior_bridge/features/subject/domain/entities/subject_entity.dart';
 import 'package:behavior_bridge/features/subject/presentation/providers/subject_providers.dart';
+import 'package:behavior_bridge/shared/core/constant/locale_provider.dart';
 import 'package:behavior_bridge/shared/core/infrastructure/routes/route_name.dart';
 import 'package:behavior_bridge/shared/screens/loading_screen.dart';
 
@@ -29,6 +31,9 @@ class _HomeBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
+    final locale = ref.watch(localeNotifierProvider);
+
     return Scaffold(
       backgroundColor: b.bg,
       body: SafeArea(
@@ -56,9 +61,9 @@ class _HomeBody extends ConsumerWidget {
                             child: const Icon(Icons.auto_awesome, size: 15, color: Colors.white),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'BehaviorBridge',
-                            style: TextStyle(
+                          Text(
+                            l.appName,
+                            style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -67,24 +72,30 @@ class _HomeBody extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () => context.pushNamed(RouteName.createSubject),
-                        child: Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            color: b.accentTint,
-                            shape: BoxShape.circle,
+                      Row(
+                        children: [
+                          _LangToggle(current: locale.languageCode),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => context.pushNamed(RouteName.createSubject),
+                            child: Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                color: b.accentTint,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.add, size: 18, color: b.accent),
+                            ),
                           ),
-                          child: Icon(Icons.add, size: 18, color: b.accent),
-                        ),
+                        ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    'Who are we\nsupporting today?',
-                    style: TextStyle(
+                  Text(
+                    l.homeTitle,
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
@@ -94,7 +105,7 @@ class _HomeBody extends ConsumerWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Pick a child to log or review.',
+                    l.homeSubtitle,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 14,
@@ -111,7 +122,7 @@ class _HomeBody extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: Text(
-                      'CHILDREN',
+                      l.sectionChildren,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -125,7 +136,7 @@ class _HomeBody extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text(
-                        'No children added yet.',
+                        l.noChildren,
                         style: TextStyle(fontFamily: 'Inter', color: b.ink3),
                         textAlign: TextAlign.center,
                       ),
@@ -137,7 +148,7 @@ class _HomeBody extends ConsumerWidget {
                       final colorIndex = i % 3;
                       final avatarColor = colorIndex == 0 ? b.accentTint : (colorIndex == 1 ? b.okTint : b.warnTint);
                       final avatarFg = colorIndex == 0 ? b.accent : (colorIndex == 1 ? b.okDark : b.warnDark);
-                      
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                         child: GestureDetector(
@@ -190,7 +201,7 @@ class _HomeBody extends ConsumerWidget {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        '${s.ageYears} yrs · ${s.relationship}',
+                                        l.subjectMeta(s.ageYears, s.relationship),
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 12,
@@ -207,11 +218,11 @@ class _HomeBody extends ConsumerWidget {
                         ),
                       );
                     }),
-                  
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                     child: Text(
-                      'TODAY AT A GLANCE',
+                      l.sectionToday,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -273,7 +284,7 @@ class _HomeBody extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              'Log now',
+                              l.logNow,
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
@@ -294,4 +305,57 @@ class _HomeBody extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _LangToggle extends ConsumerWidget {
+  const _LangToggle({required this.current});
+  final String current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final b = context.brand;
+    return Container(
+      decoration: BoxDecoration(
+        color: b.line2,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Chip(label: 'EN', active: current == 'en', onTap: () => ref.read(localeNotifierProvider.notifier).setLocale(const Locale('en')), b: b),
+          _Chip(label: 'ID', active: current == 'id', onTap: () => ref.read(localeNotifierProvider.notifier).setLocale(const Locale('id')), b: b),
+        ],
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.label, required this.active, required this.onTap, required this.b});
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+  final BrandPalette b;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: active ? b.accent : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: active ? Colors.white : b.ink3,
+            ),
+          ),
+        ),
+      );
 }

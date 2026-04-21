@@ -4,4 +4,5 @@ class StorageKeys {
   static const String reinforcementSchedules = 'bb.reinforcement_schedules';
   static const String dailyLogs = 'bb.daily_logs';
   static const String seeded = 'bb.seeded';
+  static const String locale = 'bb.locale';
 }

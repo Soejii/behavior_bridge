@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,7 @@ class CreateSubjectScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final b = context.brand;
+    final l = AppLocalizations.of(context)!;
     final nameCtrl = useTextEditingController();
     final ageCtrl = useTextEditingController();
     final relationship = useState(_relationships.first);
@@ -38,14 +40,14 @@ class CreateSubjectScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: b.bg,
-      appBar: const CustomAppBarWidget(title: 'Add person'),
+      appBar: CustomAppBarWidget(title: l.addPerson),
       body: Form(
         key: formKey,
         child: ListView(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           children: [
             Text(
-              'NAME',
+              l.nameLabel,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 11,
@@ -54,21 +56,21 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             TextFormField(
               controller: nameCtrl,
-              decoration: inputDecoration(b, 'e.g. Maya'),
+              decoration: inputDecoration(b, l.nameHint),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                  (v == null || v.trim().isEmpty) ? l.nameRequired : null,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 15,
                 color: b.ink,
               ),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Text(
-              'AGE (YEARS)',
+              l.ageLabel,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 11,
@@ -77,25 +79,24 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             TextFormField(
               controller: ageCtrl,
               keyboardType: TextInputType.number,
-              decoration: inputDecoration(b, 'e.g. 6'),
+              decoration: inputDecoration(b, l.ageHint),
               validator: (v) {
                 final n = int.tryParse(v ?? '');
-                if (n == null || n < 1 || n > 99) return 'Enter a valid age';
+                if (n == null || n < 1 || n > 99) return l.enterValidAge;
                 return null;
               },
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'IBMPlexMono',
                 fontSize: 15,
-                color: b.ink,
               ),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             Text(
-              'YOUR ROLE',
+              l.roleLabel,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 11,
@@ -104,7 +105,7 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 letterSpacing: 0.6,
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -113,14 +114,11 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 return GestureDetector(
                   onTap: () => relationship.value = r,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: selected ? b.accent : b.card,
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: selected ? b.accent : b.line,
-                      ),
+                      border: Border.all(color: selected ? b.accent : b.line),
                     ),
                     child: Text(
                       r,
@@ -135,11 +133,11 @@ class CreateSubjectScreen extends HookConsumerWidget {
                 );
               }).toList(growable: false),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: b.accent,
-                minimumSize: Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -155,8 +153,8 @@ class CreateSubjectScreen extends HookConsumerWidget {
                       ),
                     )
                   : Text(
-                      'Save person',
-                      style: TextStyle(
+                      l.savePerson,
+                      style: const TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -175,8 +173,7 @@ class CreateSubjectScreen extends HookConsumerWidget {
         hintStyle: TextStyle(fontFamily: 'Inter', color: b.ink4),
         filled: true,
         fillColor: b.card,
-        contentPadding:
-            EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: b.line),
