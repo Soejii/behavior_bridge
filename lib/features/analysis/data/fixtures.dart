@@ -40,10 +40,10 @@ const List<FixtureSeries> kFixtureSeries = [
     key: 'scheduleUpgrade',
     name: 'Ready to upgrade',
     status: AnalysisStatus.scheduleUpgrade,
-    occurrences: [1, 2, 1, 2, 3, 3, 4, 3, 4, 4, 4, 4, 4, 5, 4, 4],
+    occurrences: [1, 2, 1, 2, 3, 2, 3, 4, 4, 4, 4, 4],
     reinforced: [
-      true, true, true, true, true, true, true, true,
-      true, true, true, true, true, true, true, true,
+      true, true, true, true, true, true,
+      true, true, true, true, true, true,
     ],
   ),
   FixtureSeries(

@@ -26,7 +26,7 @@ class BehaviorAnalysisEngine {
         status: AnalysisStatus.baseline,
         headline: 'Keep observing — ${sorted.length} of 3 days logged',
         explanation:
-            'A few baseline days help us understand where ${target.label.isEmpty ? "we" : "things stand"} now, before we suggest a plan.',
+            'A few baseline days help us understand where things stand before we suggest a plan.',
       );
     }
 
@@ -35,7 +35,7 @@ class BehaviorAnalysisEngine {
     if (last7.length >= 7 && last7.every((l) => l.occurrenceCount >= goal)) {
       return const AnalysisResult(
         status: AnalysisStatus.goalReached,
-        headline: 'Goal reached — 21 days of steady tidy-ups 🎉',
+        headline: 'Goal reached — 7 days of steady results 🎉',
         explanation:
             'The habit is established. Move to surprise rewards to keep it going long-term.',
         suggestedSchedule: ScheduleType.vr3,

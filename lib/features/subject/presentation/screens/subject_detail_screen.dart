@@ -81,7 +81,6 @@ class SubjectDetailScreen extends ConsumerWidget {
                 loading: () => const LoadingScreen(),
                 error: (e, _) => ErrorScreen(error: e),
                 data: (subject) {
-                  if (subject == null) return const SizedBox();
                   final createdFormat = DateFormat('MMM d').format(subject.createdAt);
 
                   return ListView(
@@ -101,7 +100,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                subject.name.substring(0, 1).toUpperCase(),
+                                subject.name.isNotEmpty ? subject.name.substring(0, 1).toUpperCase() : '?',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
@@ -111,26 +110,32 @@ class SubjectDetailScreen extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  subject.name,
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    subject.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 20,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '\${subject.ageYears} years · \${subject.relationship} · since \$createdFormat',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 13,
-                                    color: b.ink3,
+                                  Text(
+                                    '${subject.ageYears} years · ${subject.relationship} · since $createdFormat',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 13,
+                                      color: b.ink3,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -186,7 +191,7 @@ class SubjectDetailScreen extends ConsumerWidget {
                         ),
                         error: (e, _) => Padding(
                           padding: const EdgeInsets.all(20),
-                          child: Text('Error loading targets: \$e'),
+                          child: Text('Error loading targets: $e'),
                         ),
                         data: (targets) {
                           if (targets.isEmpty) {
@@ -352,6 +357,8 @@ class _ActiveTargetCard extends ConsumerWidget {
                   children: [
                     Text(
                       target.label,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
@@ -362,7 +369,7 @@ class _ActiveTargetCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Goal: \${target.goalFrequency}x/day · \${target.isIncreasing ? "Increase" : "Decrease"}',
+                      'Goal: ${target.goalFrequency}x/day · ${target.isIncreasing ? "Increase" : "Decrease"}',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -473,6 +480,8 @@ class _SecondaryTargetCard extends ConsumerWidget {
                 children: [
                   Text(
                     target.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
@@ -481,7 +490,9 @@ class _SecondaryTargetCard extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'Goal: \${target.goalFrequency}x/day · \${logs.length} days logged',
+                    'Goal: ${target.goalFrequency}x/day · ${logs.length} days logged',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12,
@@ -539,6 +550,8 @@ class _CompletedTargetCard extends ConsumerWidget {
                 children: [
                   Text(
                     target.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
@@ -547,7 +560,9 @@ class _CompletedTargetCard extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'Goal reached · \${logs.length} days logged',
+                    'Goal reached · ${logs.length} days logged',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12,

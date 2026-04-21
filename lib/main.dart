@@ -111,7 +111,9 @@ abstract class _SeedRunner {
         final usecase = container.read(seedUsecaseProvider);
         await usecase.run();
         await store.writeJson(StorageKeys.seeded, {'v': 1});
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[SeedRunner] error: $e');
+      }
     });
   }
 }

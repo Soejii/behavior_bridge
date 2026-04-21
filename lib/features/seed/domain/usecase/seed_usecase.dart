@@ -60,7 +60,7 @@ class SeedUsecase {
         id: _uuid.v4(),
         subjectId: subject.id,
         label: labels[fixture.key] ?? 'Behavior target',
-        description: 'Demo target showcasing the \${fixture.name} state.',
+        description: 'Demo target showcasing the ${fixture.name} state.',
         baselineFrequency: 1,
         goalFrequency: 4,
         isIncreasing: true,
@@ -74,13 +74,10 @@ class SeedUsecase {
       final schedule = ReinforcementScheduleEntity(
         id: _uuid.v4(),
         targetId: target.id,
-        type: (fixture.key == 'scheduleUpgrade' || fixture.key == 'goalReached')
+        type: fixture.key == 'goalReached'
             ? ScheduleType.fr2
             : ScheduleType.crf,
-        ratio:
-            (fixture.key == 'scheduleUpgrade' || fixture.key == 'goalReached')
-                ? 2
-                : 1,
+        ratio: fixture.key == 'goalReached' ? 2 : 1,
         intervalMinutes: 0,
         reinforcerDescription: 'Sticker on the chart',
         appliedAt: now.subtract(Duration(days: fixture.length)),

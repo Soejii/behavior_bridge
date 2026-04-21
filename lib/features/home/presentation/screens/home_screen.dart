@@ -16,11 +16,7 @@ class HomeScreen extends ConsumerWidget {
     final subjectsAsync = ref.watch(subjectListControllerProvider);
     return subjectsAsync.when(
       loading: () => const LoadingScreen(),
-      error: (e, _) => subjectsAsync.when(
-        loading: () => const LoadingScreen(),
-        error: (_, __) => const _HomeBody(subjects: []),
-        data: (s) => _HomeBody(subjects: s),
-      ),
+      error: (e, _) => const _HomeBody(subjects: []),
       data: (subjects) => _HomeBody(subjects: subjects),
     );
   }
@@ -138,8 +134,9 @@ class _HomeBody extends ConsumerWidget {
                     ...subjects.asMap().entries.map((entry) {
                       final i = entry.key;
                       final s = entry.value;
-                      final avatarColor = i == 0 ? b.accentTint : (i == 1 ? b.okTint : b.warnTint);
-                      final avatarFg = i == 0 ? b.accent : (i == 1 ? b.okDark : b.warnDark);
+                      final colorIndex = i % 3;
+                      final avatarColor = colorIndex == 0 ? b.accentTint : (colorIndex == 1 ? b.okTint : b.warnTint);
+                      final avatarFg = colorIndex == 0 ? b.accent : (colorIndex == 1 ? b.okDark : b.warnDark);
                       
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -167,7 +164,7 @@ class _HomeBody extends ConsumerWidget {
                                   ),
                                   alignment: Alignment.center,
                                   child: Text(
-                                    s.name.substring(0, 1).toUpperCase(),
+                                    s.name.isNotEmpty ? s.name.substring(0, 1).toUpperCase() : '?',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w700,
@@ -193,7 +190,7 @@ class _HomeBody extends ConsumerWidget {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        '\${s.ageYears} yrs · \${s.relationship}',
+                                        '${s.ageYears} yrs · ${s.relationship}',
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 12,

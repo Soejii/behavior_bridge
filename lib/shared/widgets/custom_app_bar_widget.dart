@@ -51,6 +51,8 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget 
                   children: [
                     Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
@@ -62,6 +64,8 @@ class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget 
                       SizedBox(height: 2),
                       Text(
                         subtitle!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,

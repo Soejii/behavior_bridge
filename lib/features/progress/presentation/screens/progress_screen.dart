@@ -28,6 +28,7 @@ class ProgressScreen extends ConsumerWidget {
       return const LoadingScreen();
     }
     if (targetAsync.hasError) return ErrorScreen(error: targetAsync.error!);
+    if (logsAsync.hasError) return ErrorScreen(error: logsAsync.error!);
 
     final target = targetAsync.value;
     if (target == null) {
