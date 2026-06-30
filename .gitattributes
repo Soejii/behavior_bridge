@@ -1,0 +1,50 @@
+# Normalize line endings: store as LF in the repo, check out as LF everywhere.
+# This prevents the "every line changed" CRLF/LF phantom diffs.
+* text=auto eol=lf
+
+# Source / text files — force LF (defensive, in case auto-detection misfires)
+*.dart       text eol=lf
+*.yaml       text eol=lf
+*.yml        text eol=lf
+*.json       text eol=lf
+*.md         text eol=lf
+*.gradle     text eol=lf
+*.kt         text eol=lf
+*.kts        text eol=lf
+*.java       text eol=lf
+*.xml        text eol=lf
+*.svg        text eol=lf
+*.properties text eol=lf
+*.sh         text eol=lf
+*.txt        text eol=lf
+*.plist      text eol=lf
+.gitignore   text eol=lf
+.gitattributes text eol=lf
+
+# Windows-only scripts keep CRLF
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+
+# Binary files — never touch line endings
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
+*.jar   binary
+*.so    binary
+*.a     binary
+*.dylib binary
+*.keystore binary
+*.jks   binary
+*.pdf   binary
+*.zip   binary
+*.mp3   binary
+*.mp4   binary
+*.webm  binary
